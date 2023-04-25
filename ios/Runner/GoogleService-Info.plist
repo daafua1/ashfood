@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>808463964758-sqt8b6s3k3pus9dhqbrp5gto5tth7jbl.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.808463964758-sqt8b6s3k3pus9dhqbrp5gto5tth7jbl</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBE1ibLOY4Tvepj_xwvCXo9ZV_B9JsKf7c</string>
+	<key>GCM_SENDER_ID</key>
+	<string>808463964758</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.ashfood</string>
+	<key>PROJECT_ID</key>
+	<string>daafua-ashfood</string>
+	<key>STORAGE_BUCKET</key>
+	<string>daafua-ashfood.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:808463964758:ios:d4a649416462745d5339f7</string>
+</dict>
+</plist>

@@ -22,6 +22,8 @@ class FormWidget extends StatefulWidget {
   final bool? enabled;
   // A hint text for the textfield
   final String? hintText;
+   bool obscureText;
+  final bool isPassword;
   // A textstyle for the textfield
   final TextStyle? textStyle;
   FormWidget(
@@ -32,6 +34,8 @@ class FormWidget extends StatefulWidget {
       this.textStyle,
       this.errorStyle,
       this.validator,
+      this.obscureText = false,
+      this.isPassword = false,
       this.onChanged,
       super.key});
 
@@ -54,9 +58,19 @@ class _FormWidgetState extends State<FormWidget> {
       controller: widget.controller,
       textAlign: TextAlign.start,
       maxLines: 1,
+      obscureText:widget.obscureText ,
+      
      validator: widget.validator as dynamic,
       style:widget.textStyle ??  TextStyles.body,
       decoration: InputDecoration(
+        suffixIcon: widget.isPassword ? IconButton(
+          onPressed: () {
+            setState(() {
+              widget.obscureText = !widget.obscureText;
+            });
+          },
+          icon: Icon(widget.obscureText ? Icons.visibility_off : Icons.visibility), color: Colors.white,
+        ) : null,
         errorText: widget.validator == null
           ? null
           : widget.validator!(widget.controller.text),

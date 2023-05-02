@@ -97,6 +97,7 @@ class NewMenuController extends GetxController {
           name: name.value.text,
           vendor: user.value,
           media: imageURLs,
+          
           vendorId: user.value.id,
           price: double.parse(price.value.text),
           id: docReference.id,

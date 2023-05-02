@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:ashfood/utils/exports.dart';
 
 // A file to store text styles used throughout the app
 class TextStyles {
@@ -32,6 +32,12 @@ class TextStyles {
     fontSize: 15,
     fontWeight: FontWeight.w500,
     color: Colors.black,
+  );
+
+   static const TextStyle bodyRed = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    color: Constants.appBarColor,
   );
 
   static const TextStyle bodysmallSubTitleB = TextStyle(

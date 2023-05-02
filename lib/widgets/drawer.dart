@@ -1,8 +1,13 @@
+import 'package:ashfood/screens/riders/past_orders.dart';
 import 'package:ashfood/screens/students/active_orders.dart';
+import 'package:ashfood/screens/vendors/active_orders.dart';
 import 'package:ashfood/screens/vendors/add_menu.dart';
+import 'package:ashfood/screens/vendors/past_orders.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../screens/get_started.dart';
+import '../screens/students/past_orders.dart';
 import '../utils/exports.dart';
 
 class VendorDrawer extends StatelessWidget {
@@ -56,35 +61,47 @@ class VendorDrawer extends StatelessWidget {
                   )
                 ],
               )),
+          userType == 'rider'
+              ? SizedBox.shrink()
+              : ListTile(
+                  onTap: () {
+                    Get.back();
+                    if (userType == 'customer') {
+                      Get.to(() => const ActivieOrdersStudents());
+                    } else if (userType == 'vendor') {
+                      Get.to(() => const ActivieOrdersVendors());
+                    }
+                  },
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  title: const Text(
+                    "Active Orders",
+                    style: TextStyles.buttonBlack,
+                    textAlign: TextAlign.start,
+                  ),
+                  selectedTileColor: const Color(0x42000000),
+                  trailing: const Icon(Icons.arrow_forward_ios,
+                      color: Color(0xff000000), size: 24),
+                ),
+          userType == 'rider'
+              ? SizedBox.shrink()
+              : const Divider(
+                  color: Color(0x4d9e9e9e),
+                  height: 16,
+                  thickness: 1,
+                  indent: 0,
+                  endIndent: 0,
+                ),
           ListTile(
             onTap: () {
               Get.back();
-              userType == 'customer'
-                  ? Get.to(() => const ActivieOrdersStudents())
-                  : null;
-            },
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            title: const Text(
-              "Active Orders",
-              style: TextStyles.buttonBlack,
-              textAlign: TextAlign.start,
-            ),
-            selectedTileColor: const Color(0x42000000),
-            trailing: const Icon(Icons.arrow_forward_ios,
-                color: Color(0xff000000), size: 24),
-          ),
-          const Divider(
-            color: Color(0x4d9e9e9e),
-            height: 16,
-            thickness: 1,
-            indent: 0,
-            endIndent: 0,
-          ),
-          ListTile(
-            onTap: () {
-              Get.back();
-              //Get.to(() => const EditProfile());
+              if (userType == 'rider') {
+                Get.to(() => PastOrdersRider());
+              } else if (userType == 'customer') {
+                Get.to(() => PastOrdersStudents());
+              } else if (userType == 'vendor') {
+                Get.to(() => PastOrdersVendor());
+              }
             },
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -106,8 +123,9 @@ class VendorDrawer extends StatelessWidget {
           ),
           userType == UserType.vendor.name
               ? ListTile(
-                  onTap: () {
+                  onTap: () async {
                     Get.back();
+
                     Get.to(() => const AddMenu());
                   },
                   contentPadding:
@@ -131,43 +149,50 @@ class VendorDrawer extends StatelessWidget {
                   endIndent: 0,
                 )
               : const SizedBox.shrink(),
-          // ListTile(
-          //   onTap: () {
-          //     Get.back();
-          //     // Get.to(() => const VeiwProfile(
-          //     //       withID: false,
-          //     //     ));
-          //   },
-          //   contentPadding:
-          //       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          //   title: const Text(
-          //     "Edit Profile",
-          //     style: TextStyles.buttonBlack,
-          //     textAlign: TextAlign.start,
-          //   ),
-          //   selectedTileColor: const Color(0x42000000),
-          //   trailing: const Icon(Icons.arrow_forward_ios,
-          //       color: Color(0xff000000), size: 24),
-          // ),
-          // const Divider(
-          //   color: Color(0x4d9e9e9e),
-          //   height: 16,
-          //   thickness: 1,
-          //   indent: 0,
-          //   endIndent: 0,
-          // ),
-          const SizedBox(height: 16),
+          ListTile(
+            onTap: () {
+              Get.back();
+              // Get.to(() => const VeiwProfile(
+              //       withID: false,
+              //     ));
+            },
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            title: const Text(
+              "Contact Support",
+              style: TextStyles.buttonBlack,
+              textAlign: TextAlign.start,
+            ),
+            subtitle: const Text(
+              "daafua.benni@ashesi.edu.gh",
+              style: TextStyles.bodyBlack,
+              textAlign: TextAlign.start,
+            ),
+            selectedTileColor: const Color(0x42000000),
+            trailing: const Icon(Icons.arrow_forward_ios,
+                color: Color(0xff000000), size: 24),
+          ),
+          const Divider(
+            color: Color(0x4d9e9e9e),
+            height: 16,
+            thickness: 1,
+            indent: 0,
+            endIndent: 0,
+          ),
+          const SizedBox(height: 30),
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 20, 10, 30),
             child: MaterialButton(
               onPressed: () {
                 FirebaseAuth.instance.signOut();
-                Get.offAll(() => LoginScreen(
-                    usrType: user.value.userType == UserType.customer.name
-                        ? UserType.customer
-                        : user.value.userType == UserType.vendor.name
-                            ? UserType.vendor
-                            : UserType.rider));
+               Get.offAll(() => const GetStarted());
+                    //  Get.offAll(() => LoginScreen(usrType:
+                    //      user.value.userType == UserType.customer.name
+                    //         ? UserType.customer
+                    //         : user.value.userType == UserType.vendor.name
+                    //             ? UserType.vendor
+                    //             : UserType.rider
+                    // ));
               },
               color: Constants.appBarColor,
               elevation: 0,

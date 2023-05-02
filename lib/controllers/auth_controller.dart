@@ -53,21 +53,24 @@ class AuthController extends GetxController {
         name.value.text.isNotEmpty &&
         phone.value.text.isNotEmpty &&
         phone.value.text.length > 9 &&
+        phone.value.text.isNumericOnly &&
         password.value.text.length > 5) {
       validationError.value = false;
       isLoading.value = true;
 
       try {
-         String? imageURL;
+        String? imageURL;
         // Sign in the user
-         if (profileImage.value.isNotEmpty) {
-           imageURL =  await Services().uploadFile(File(profileImage.value));
-          }
+        if (profileImage.value.isNotEmpty) {
+          imageURL = await Services().uploadFile(File(profileImage.value));
+        }
         await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
-                email: email.value.text, password: password.value.text)
+                email: userType.value == UserType.rider
+                    ? "${phone.value.text}@gmail.com"
+                    : email.value.text,
+                password: password.value.text)
             .then((value) async {
-         
           // Create a new user in the database
           createUser(value.user!.uid, imageURL);
           prefs!.setString('userString', jsonEncode(user.value.toJson()));
@@ -80,7 +83,7 @@ class AuthController extends GetxController {
 
         isLoading.value = false;
         // Navigate to the feed page
-       redirectUser();
+        redirectUser();
       } catch (e) {
         isLoading.value = false;
         print(e.toString());
@@ -136,6 +139,7 @@ class AuthController extends GetxController {
       userType: userType.value.name,
       lat: lat.value,
       long: long.value,
+      numOfOrders: 0
     );
   }
 

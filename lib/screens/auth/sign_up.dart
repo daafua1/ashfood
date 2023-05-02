@@ -91,8 +91,8 @@ class _SignUpState extends State<SignUp> {
                           ? CrossFadeState.showFirst
                           : CrossFadeState.showSecond,
                   duration: const Duration(milliseconds: 500),
-                  firstChild:
-                      const Text("Image cannot be empty", style: TextStyles.errorTextStyle),
+                  firstChild: const Text("Image cannot be empty",
+                      style: TextStyles.errorTextStyle),
                   secondChild: const SizedBox.shrink(),
                 ),
               ),
@@ -124,27 +124,29 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               // The email text field
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
-                child: Obx(
-                  () => FormWidget(
-                    controller: controller.email.value,
-                    hintText: "user@ashesi.edu.gh",
-                    lableText: "Email",
-                    validator: FormBuilderValidators.compose(
-                      [
-                        if (controller.validationError.value) ...[
-                          FormBuilderValidators.required(
-                              errorText: "Eamil is required".tr),
-                          FormBuilderValidators.email(
-                              errorText: "Email is not valid".tr),
-                        ],
-                      ],
+              widget.userType == UserType.rider
+                  ? SizedBox(height: 16,)
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16, horizontal: 0),
+                      child: Obx(
+                        () => FormWidget(
+                          controller: controller.email.value,
+                          hintText: "user@ashesi.edu.gh",
+                          lableText: "Email",
+                          validator: FormBuilderValidators.compose(
+                            [
+                              if (controller.validationError.value) ...[
+                                FormBuilderValidators.required(
+                                    errorText: "Eamil is required".tr),
+                                FormBuilderValidators.email(
+                                    errorText: "Email is not valid".tr),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
               // The student id text field
               Obx(
                 () => FormWidget(

@@ -1,24 +1,20 @@
-import 'package:ashfood/widgets/custom_popup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
 
 import '../../models/order.dart';
 import '../../utils/exports.dart';
 import 'package:another_stepper/another_stepper.dart';
 
-class TrackOrder extends StatefulWidget {
+class TrackOrderVendor extends StatefulWidget {
   final String orderId;
-  const TrackOrder({super.key, required this.orderId});
+  const TrackOrderVendor({super.key, required this.orderId});
 
   @override
-  State<TrackOrder> createState() => _TrackOrderState();
+  State<TrackOrderVendor> createState() => _TrackOrderVendorState();
 }
 
-class _TrackOrderState extends State<TrackOrder> {
+class _TrackOrderVendorState extends State<TrackOrderVendor> {
   int? activeIndex;
- 
+
   UserOrder? order;
 
   @override
@@ -91,7 +87,7 @@ class _TrackOrderState extends State<TrackOrder> {
               : TextStyles.activeTimeLine,
         ),
         subtitle: StepperText(
-          "Your order has been confirmed",
+          "The order has been confirmed",
           textStyle: activeIndex! >= 1
               ? TextStyles.bodyBlack
               : TextStyles.activeTimeLineBody,
@@ -115,7 +111,7 @@ class _TrackOrderState extends State<TrackOrder> {
               : TextStyles.activeTimeLine,
         ),
         subtitle: StepperText(
-          "Your order is being prepared",
+          "The order is being prepared",
           textStyle: activeIndex! >= 2
               ? TextStyles.bodyBlack
               : TextStyles.activeTimeLineBody,
@@ -163,7 +159,7 @@ class _TrackOrderState extends State<TrackOrder> {
               : TextStyles.activeTimeLine,
         ),
         subtitle: StepperText(
-          "Your order has arrived at the specified location",
+          "The order has arrived at the specified location",
           textStyle: activeIndex! >= 4
               ? TextStyles.bodyBlack
               : TextStyles.activeTimeLineBody,
@@ -202,7 +198,6 @@ class _TrackOrderState extends State<TrackOrder> {
 
   @override
   Widget build(BuildContext context) {
-    print(activeIndex.toString());
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -248,64 +243,6 @@ class _TrackOrderState extends State<TrackOrder> {
                         ),
                       ),
                       SizedBox(height: 30),
-                      activeIndex! <= 1
-                          ? Container(
-                              decoration: BoxDecoration(
-                                color: Constants.appBarColor,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (_) {
-                                            return CustomPopUp(
-                                              message:
-                                                  'Are you sure you want to cancel this order?',
-                                              confirmText: 'Yes, Cancel',
-                                              cancelText: "No, Don't Cancel",
-                                              onTapCancel: () => Get.back(),
-                                              onTapConfirm: () {
-                                                FirebaseFirestore.instance
-                                                    .collection('orders')
-                                                    .doc(order!.id)
-                                                    .update({
-                                                  'status': 'cancelled'
-                                                }).then((value) {
-                                                  Fluttertoast.showToast(
-                                                      msg: 'Order cancelled');
-                                                  Get.close(3);
-                                                });
-                                              },
-                                            );
-                                          });
-                                    },
-                                    child: Text('Cancel Order',
-                                        style: TextStyles.button),
-                                  ),
-                                  SizedBox(width: 10),
-                                  JustTheTooltip(
-                                    showDuration: Duration(seconds: 3),
-                                    child: Icon(
-                                      Icons.info,
-                                      color: Colors.white,
-                                    ),
-                                    content: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'You can cancel your order withing 30 minutes of placing it.',
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                          : SizedBox.shrink(),
 
                       // SizedBox(height: 30),
 

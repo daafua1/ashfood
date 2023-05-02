@@ -21,6 +21,9 @@ class _LoginScreenState extends State<LoginScreen> {
   // The controllers for the email text fields
   TextEditingController email = TextEditingController();
 
+  // The controllers for the phone text fields
+  TextEditingController phone = TextEditingController();
+
   // Whether the user inputs are valid
   bool validationError = false;
 
@@ -28,6 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
 
   final controller = Get.put(AuthController());
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -60,24 +65,45 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
-                child: FormWidget(
-                  controller: email,
-                  hintText: "user@ashesi.edu.gh",
-                  lableText: "Email",
-                  validator: FormBuilderValidators.compose(
-                    [
-                      if (validationError) ...[
-                        FormBuilderValidators.required(
-                            errorText: "Eamil is required".tr),
-                        FormBuilderValidators.email(
-                            errorText: "Email is not valid".tr),
-                      ],
-                    ],
-                  ),
-                ),
+                child: widget.usrType == UserType.rider
+                    ? FormWidget(
+                        controller: phone,
+                        lableText: "Phone Number",
+                        hintText: "0241234567",
+                        validator: FormBuilderValidators.compose(
+                          [
+                            if (validationError) ...[
+                              FormBuilderValidators.required(
+                                  errorText: "Phone number is required".tr),
+                              FormBuilderValidators.minLength(10,
+                                  errorText: "Phone number is invalid".tr),
+                                  FormBuilderValidators.numeric(
+                                  errorText: "Phone number is invalid".tr),
+                            ],
+                          ],
+                        ),
+                      )
+                    : FormWidget(
+                        controller: email,
+                        hintText: "user@ashesi.edu.gh",
+                        lableText: "Email",
+                        validator: FormBuilderValidators.compose(
+                          [
+                            if (validationError) ...[
+                              FormBuilderValidators.required(
+                                  errorText: "Eamil is required".tr),
+                              FormBuilderValidators.email(
+                                  errorText: "Email is not valid".tr),
+                              
+                            ],
+                          ],
+                        ),
+                      ),
               ),
               // The student id text field
               FormWidget(
+                isPassword: true,
+                obscureText: true,
                 controller: password,
                 lableText: "Password",
                 validator: FormBuilderValidators.compose(
@@ -162,12 +188,38 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  bool verifyPhone() {
+    if (widget.usrType != UserType.rider) {
+      return true;
+    } else {
+      if (phone.text.isNotEmpty &&
+          phone.text.length > 9 &&
+          phone.text.isNumericOnly) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  bool verifyEmail() {
+    if (widget.usrType == UserType.rider) {
+      return true;
+    } else {
+      if (email.text.isNotEmpty && email.text.isEmail) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
   // Validates the user inputs and logs the user in
   void validateForms() async {
     // Check if the user inputs are valid
-    if (email.text.isEmail &&
+    if (verifyPhone() &&
+        verifyEmail() &&
         password.text.isNotEmpty &&
-       
         password.text.length > 5) {
       setState(() {
         validationError = false;
@@ -176,22 +228,18 @@ class _LoginScreenState extends State<LoginScreen> {
       try {
         // // Sign in the user
         await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email.text, password: password.text)
+            .signInWithEmailAndPassword(
+                email: widget.usrType == UserType.rider
+                    ? "${phone.text}@gmail.com"
+                    : email.text,
+                password: password.text)
             .then((value) async {
           await Services.getUser(value.user!.uid);
           setState(() {
             isLoading = false;
-        
           });
           controller.redirectUser();
-
-        //   setState(() {
-        //     isLoading = false;
-        //   });
-        //   // Navigate to the feed page
-        //   Get.offAll(() => const FeedPage());
-        // });
-            });
+        });
       } catch (e) {
         setState(() {
           isLoading = false;

@@ -6,6 +6,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get_utils/src/platform/platform_io.dart';
+import 'package:http/http.dart' as http;
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import '../main.dart';
 import '../models/app_user.dart';
@@ -86,6 +88,46 @@ class Services {
         .where('userId', isEqualTo: userId)
         .snapshots();
   }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getOrdersVendros(
+      String vendorId) {
+    return FirebaseFirestore.instance
+        .collection('orders')
+        .where('status', isEqualTo: 'pending')
+        .where('vendorId', isEqualTo: vendorId)
+        .orderBy(
+          'isServed',
+        )
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getPastOrdersRiders(
+      String userId) {
+    return FirebaseFirestore.instance
+        .collection('orders')
+        .where('status', isEqualTo: 'completed')
+        .where('riderId', isEqualTo: userId)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getPastOrdersVendors(
+      String userId) {
+    return FirebaseFirestore.instance
+        .collection('orders')
+        .where('status', isEqualTo: 'completed')
+        .where('vendorId', isEqualTo: userId)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getPastOrdersStudents(
+      String userId) {
+    return FirebaseFirestore.instance
+        .collection('orders')
+        .where('status', isEqualTo: 'completed')
+        .where('userId', isEqualTo: userId)
+        .snapshots();
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> getRiderOrders(String userId) {
     return FirebaseFirestore.instance
         .collection('orders')
@@ -94,7 +136,8 @@ class Services {
         .snapshots();
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getRiderVendor(String userId, String vendorId) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getRiderVendor(
+      String userId, String vendorId) {
     return FirebaseFirestore.instance
         .collection('orders')
         .where('status', isEqualTo: 'pending')
@@ -103,29 +146,39 @@ class Services {
         .snapshots();
   }
 
-  void registerNotification() {
-    firebaseMessaging.requestPermission();
-    final doc = prefs!.getString('docs');
+  void registerNotification() async {
+    // firebaseMessaging.requestPermission();
+    // final doc = prefs!.getString('docs');
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        showNotification(message.notification!);
-      }
-      return;
-    });
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   if (message.notification != null) {
+    //     showNotification(message.notification!);
+    //   }
+    //   return;
+    // });
+    var deviceState = await OneSignal.shared.getDeviceState();
 
-    firebaseMessaging.getToken().then((token) {
-      if (token != null && token != user.value.fcmToken) {
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.value.id)
-            .update({
-          'fcmToken': token,
-        });
-      }
-    }).catchError((err) {
-      // Fluttertoast.showToast(msg: err.message.toString());
+    if (deviceState == null || deviceState.userId == null) return;
+
+    var playerId = deviceState.userId!;
+    print('playerId: $playerId');
+    FirebaseFirestore.instance.collection('users').doc(user.value.id).update({
+      'fcmToken': playerId,
     });
+    user.value.fcmToken = playerId;
+
+    // firebaseMessaging.getToken().then((token) {
+    //   if (token != null && token != user.value.fcmToken) {
+    //     FirebaseFirestore.instance
+    //         .collection('users')
+    //         .doc(user.value.id)
+    //         .update({
+    //       'fcmToken': token,
+    //     });
+    //   }
+    // }).catchError((err) {
+    //   // Fluttertoast.showToast(msg: err.message.toString());
+    //});
   }
 
   void configLocalNotification() {
@@ -168,8 +221,52 @@ class Services {
     final query = FirebaseFirestore.instance
         .collection('users')
         .where('userType', isEqualTo: 'rider')
-        .where('numOfOrders', isLessThan: 5).limit(1);
+        .where('numOfOrders', isLessThan: 10)
+        .limit(1);
     final docs = await query.get();
     return docs.docs;
+  }
+
+  // void sendNotification(
+  //     {required String title,
+  //     required String message,
+  //     required String token}) async {
+  //   const endPoint =
+  //       'https://us-central1-dtme-ffef7.cloudfunctions.net/sendMessageAshFood';
+
+  //   final body = {
+  //     "data": {
+  //       "title": title,
+  //       "message": message,
+  //       "token": token,
+  //     }
+  //   };
+
+  //   final request =
+  //       await http.post(Uri.parse(endPoint), body: jsonEncode(body), headers: {
+  //     'Content-Type': 'application/json',
+  //   });
+
+  //   print(request.body.toString());
+  //   print(request.reasonPhrase);
+  // }
+
+  void sendNotification(
+      {required String token,
+      required String content,
+      required String heading}) async {
+    var notification = OSCreateNotification(
+      playerIds: [token],
+      content: content,
+      heading: heading,
+      // iosAttachments: {"id1": imgUrlString},
+      bigPicture: 'assets/images/logo.png',
+      // buttons: [
+      //   OSActionButton(text: "test1", id: "id1"),
+      //   OSActionButton(text: "test2", id: "id2")
+      // ]
+    );
+
+    var response = await OneSignal.shared.postNotification(notification);
   }
 }

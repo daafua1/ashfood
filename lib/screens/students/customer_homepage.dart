@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../utils/exports.dart';
 import '../../utils/services.dart';
-import '../../widgets/vendor_drawer.dart';
+import '../../widgets/drawer.dart';
 
 class CustomerHomePage extends StatefulWidget {
   const CustomerHomePage({super.key});

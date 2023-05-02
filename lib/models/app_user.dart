@@ -14,7 +14,7 @@ class AppUser {
   String? fcmToken;
   bool? isAvailable;
   int? numOfOrders;
-  int? averageRating;
+  num? averageRating;
   int? totalRating;
   AppUser({
     this.name,

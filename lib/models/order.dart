@@ -15,6 +15,10 @@ class UserOrder {
   final String? createdAt;
   final String? vendorId;
   final AppUser? rider;
+  final int? riderStatus;
+  bool? isServed;
+  num? userRating;
+  String? userComment;
 
   UserOrder({
     this.menu,
@@ -27,6 +31,10 @@ class UserOrder {
     this.status,
     this.createdAt,
     this.vendorId,
+    this.riderStatus,
+    this.userRating,
+    this.userComment,
+    this.isServed,
   });
 
   factory UserOrder.fromJson(Map<String, dynamic> json) => UserOrder(
@@ -40,6 +48,11 @@ class UserOrder {
         status: json['status'],
         createdAt: json['createdAt'],
         vendorId: json['vendorId'],
+        riderStatus: json['riderStatus'],
+        userRating: json['userRating'],
+        userComment: json['userComment'],
+        isServed: json['isServed'],
+        
       );
 
   Map<String, dynamic> toJson() => {
@@ -53,5 +66,9 @@ class UserOrder {
         'status': status,
         'createdAt': createdAt,
         'vendorId': vendorId,
+        'riderStatus':riderStatus,
+        'userRating':userRating,
+        'userComment':userComment,
+        'isServed':isServed,
       };
 }

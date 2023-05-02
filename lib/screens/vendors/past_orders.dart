@@ -5,28 +5,28 @@ import '../../models/order.dart';
 import '../../utils/services.dart';
 import '../../widgets/containers.dart';
 
-class ActivieOrdersStudents extends StatefulWidget {
-  const ActivieOrdersStudents({super.key});
+class PastOrdersVendor extends StatefulWidget {
+  const PastOrdersVendor({super.key});
 
   @override
-  State<ActivieOrdersStudents> createState() => _ActivieOrdersStudentsState();
+  State<PastOrdersVendor> createState() => _PastOrdersVendorState();
 }
 
-class _ActivieOrdersStudentsState extends State<ActivieOrdersStudents> {
+class _PastOrdersVendorState extends State<PastOrdersVendor> {
   List<QueryDocumentSnapshot<Map<String, dynamic>>> orders = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: Constants.appBar(
-          'Active Orders',
-          true,
+          'Past Orders',
+          false,
         ),
         body: _buildOrderList());
   }
 
   Widget _buildOrderList() {
     return StreamBuilder(
-      stream: Services().getOrders(user.value.id!),
+      stream: Services().getPastOrdersVendors(user.value.id!),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           Future.delayed(Duration.zero, () {
@@ -41,7 +41,7 @@ class _ActivieOrdersStudentsState extends State<ActivieOrdersStudents> {
               itemBuilder: (context, index) {
                 final item = UserOrder.fromJson(orders[index].data());
                 return OrderContainer(
-                  userType: UserType.customer,
+                  userType: UserType.vendor,
                   order: item,
                 );
               },

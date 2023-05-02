@@ -5,20 +5,20 @@ import '../../models/order.dart';
 import '../../utils/services.dart';
 import '../../widgets/containers.dart';
 
-class ActivieOrdersStudents extends StatefulWidget {
-  const ActivieOrdersStudents({super.key});
+class PastOrdersStudents extends StatefulWidget {
+  const PastOrdersStudents({super.key});
 
   @override
-  State<ActivieOrdersStudents> createState() => _ActivieOrdersStudentsState();
+  State<PastOrdersStudents> createState() => _PastOrdersStudentsState();
 }
 
-class _ActivieOrdersStudentsState extends State<ActivieOrdersStudents> {
+class _PastOrdersStudentsState extends State<PastOrdersStudents> {
   List<QueryDocumentSnapshot<Map<String, dynamic>>> orders = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: Constants.appBar(
-          'Active Orders',
+          'Past Orders',
           true,
         ),
         body: _buildOrderList());
@@ -26,7 +26,7 @@ class _ActivieOrdersStudentsState extends State<ActivieOrdersStudents> {
 
   Widget _buildOrderList() {
     return StreamBuilder(
-      stream: Services().getOrders(user.value.id!),
+      stream: Services().getPastOrdersStudents(user.value.id!),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           Future.delayed(Duration.zero, () {

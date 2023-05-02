@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../utils/exports.dart';
 import '../../utils/services.dart';
-import '../../widgets/vendor_drawer.dart';
+import '../../widgets/drawer.dart';
 
 // A page to show the feed of posts
 class RiderHomepage extends StatefulWidget {
@@ -42,7 +42,7 @@ class _RiderHomepageState extends State<RiderHomepage> {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.zero,
         ),
-        title: Text(
+        title: const Text(
          'Upcoming Deliveries',
           style: TextStyles.title,
         ),

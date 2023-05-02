@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/menu.dart';
 import '../../utils/exports.dart';
 import '../../utils/services.dart';
-import '../../widgets/vendor_drawer.dart';
+import '../../widgets/drawer.dart';
 
 // A page to show the feed of posts
 class VendorHomepage extends StatefulWidget {
@@ -106,7 +106,7 @@ class _VendorHomepageState extends State<VendorHomepage> {
             //     ],
             //   ),
             // ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             const Text(
               'Available Menus',
               style: TextStyles.titleBlack,
@@ -126,7 +126,7 @@ class _VendorHomepageState extends State<VendorHomepage> {
                               Menu.fromJson(snapshot.data!.docs[index].data());
                           return Padding(
                             padding: const EdgeInsets.only(top: 10),
-                            child: MenuContainer(menu: menu),
+                            child: MenuContainer(menu: menu, forVendor: true,),
                           );
                         },
                       );

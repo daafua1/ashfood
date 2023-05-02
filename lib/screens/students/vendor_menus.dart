@@ -34,7 +34,7 @@ class _VendorMenusState extends State<VendorMenus> {
                 final menu = Menu.fromJson(snapshot.data!.docs[index].data());
                 return Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: MenuContainer(menu: menu),
+                  child: MenuContainer(menu: menu,forVendor: false,),
                 );
               },
             );

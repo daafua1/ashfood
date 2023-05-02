@@ -18,3 +18,9 @@ samples, guidance on mobile development, and a full API reference.
 
 1. Should the payment gateway be receiving real money?
 2. Should students be allowed to cancel after payment? If yes, how do you deal with refunds?
+
+
+https://us-central1-dtme-ffef7.cloudfunctions.net/sendMessageAshFood
+
+
+

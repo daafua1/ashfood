@@ -3,6 +3,7 @@ import 'package:ashfood/models/cart_item.dart';
 import 'package:ashfood/screens/riders/order_details_riders.dart';
 import 'package:ashfood/screens/riders/vendor_orders.dart';
 import 'package:ashfood/screens/students/vendor_menus.dart';
+import 'package:ashfood/screens/vendors/order_details_vendor.dart';
 import 'package:ashfood/utils/exports.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +15,8 @@ import '../screens/students/order_details.dart';
 
 class MenuContainer extends StatelessWidget {
   final Menu menu;
-  const MenuContainer({super.key, required this.menu});
+  final bool forVendor;
+  const MenuContainer({super.key, required this.menu, required this.forVendor});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class MenuContainer extends StatelessWidget {
               border: Border.all(color: Colors.grey, width: 2)),
           //padding: const EdgeInsets.all(15),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 height: 150,
@@ -37,7 +40,7 @@ class MenuContainer extends StatelessWidget {
                         fit: BoxFit.cover)),
               ),
               Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.fromLTRB(12.0,12,12,0),
                 child: Row(
                   children: [
                     Expanded(
@@ -55,6 +58,16 @@ class MenuContainer extends StatelessWidget {
                   ],
                 ),
               ),
+              forVendor
+                  ? IconButton(
+                      onPressed: () {
+                        FirebaseFirestore.instance
+                            .collection("menus")
+                            .doc(menu.id)
+                            .delete();
+                      },
+                      icon: Icon(Icons.delete))
+                  : SizedBox.shrink()
             ],
           )),
     );
@@ -64,12 +77,15 @@ class MenuContainer extends StatelessWidget {
 class VendorContainer extends StatelessWidget {
   final AppUser vendor;
   final bool forRiders;
-  const VendorContainer({super.key, required this.vendor, required this.forRiders});
+  const VendorContainer(
+      {super.key, required this.vendor, required this.forRiders});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.to(() =>forRiders ? VendorOrders(vendor: vendor): VendorMenus(vendor: vendor)),
+      onTap: () => Get.to(() => forRiders
+          ? VendorOrders(vendor: vendor)
+          : VendorMenus(vendor: vendor)),
       child: Container(
         width: Constants.size.width,
         height: 150,
@@ -185,8 +201,9 @@ class _CartItemContainerState extends State<CartItemContainer> {
 
 class OrderContainer extends StatefulWidget {
   final UserOrder order;
-  final bool forRiders;
-  const OrderContainer({super.key, required this.order, required this.forRiders});
+  final UserType userType;
+  const OrderContainer(
+      {super.key, required this.order, required this.userType});
 
   @override
   State<OrderContainer> createState() => _OrderContainerState();
@@ -196,7 +213,15 @@ class _OrderContainerState extends State<OrderContainer> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>widget.forRiders ? Get.to(() => OrderDetailsRiders(order: widget.order)):Get.to(()=>OrderDetails(order: widget.order)),
+      onTap: () {
+        if (widget.userType == UserType.rider) {
+          Get.to(() => OrderDetailsRiders(order: widget.order));
+        } else if (widget.userType == UserType.customer) {
+          Get.to(() => OrderDetails(order: widget.order));
+        } else if (widget.userType == UserType.vendor) {
+          Get.to(() => OrderDetailsVendor(order: widget.order));
+        }
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         height: 100,
@@ -232,9 +257,26 @@ class _OrderContainerState extends State<OrderContainer> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Text(
-                    "GHS ${widget.order.menu!.price.toString()}",
-                    style: TextStyles.buttonBlack,
+                  Row(
+                    children: [
+                      Text(
+                        "GHS ${widget.order.menu!.price.toString()}",
+                        style: TextStyles.buttonBlack,
+                      ),
+                      widget.userType == UserType.vendor &&
+                              widget.order.isServed == true
+                          ? Padding(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Text(
+                                'served',
+                                style: TextStyle(
+                                    color: Constants.appBarColor,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 14),
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                    ],
                   ),
                 ],
               ),

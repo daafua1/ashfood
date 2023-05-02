@@ -35,12 +35,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () {
-                Get.to(() => SelectLocation());
+                Get.to(() => const SelectLocation());
               },
               child: Row(
                 children: [
-                  Icon(Icons.location_on),
-                  SizedBox(
+                  const Icon(Icons.location_on),
+                  const SizedBox(
                     width: 20,
                   ),
                   Expanded(
@@ -87,10 +87,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 },
               );
             } else {
-              return Center(child: Text('No Items Found'));
+              return const Center(child: Text('No Items Found'));
             }
           } else {
-            return Center(child: Text('No Items Found'));
+            return const Center(child: Text('No Items Found'));
           }
         });
   }
@@ -98,7 +98,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   floatingButtons() {
     return cart.isNotEmpty
         ? Container(
-            margin: EdgeInsets.symmetric(
+            margin: const EdgeInsets.symmetric(
               horizontal: 20,
             ),
             color: Colors.white,
@@ -114,15 +114,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           style: TextStyles.buttonBlack,
                         ),
                       )
-                    : SizedBox.shrink(),
+                    : const SizedBox.shrink(),
                 Row(
                   children: [
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          if (Utilities.shouldOrder() &&
+                          if (
+                               Utilities.shouldOrder() &&
                               user.value.location != null &&
-                              user.value.location!.isNotEmpty) {
+                                  user.value.location!.isNotEmpty) {
                             PayWithPayStack().now(
                                 context: context,
                                 secretKey:
@@ -147,14 +148,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           } else {
                             if (user.value.location != null &&
                                 user.value.location!.isNotEmpty) {
-                            } else
+                            } else {
                               Fluttertoast.showToast(
                                   msg: "Add delivery location",
                                   toastLength: Toast.LENGTH_LONG);
+                            }
                           }
                         },
                         child: Container(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 10),
                           decoration: BoxDecoration(
                               color: Utilities.shouldOrder()
@@ -163,7 +165,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               borderRadius: BorderRadius.circular(16)),
                           child: Center(
                             child: isLoading
-                                ? Container(
+                                ? const SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: CircularProgressIndicator(
@@ -171,7 +173,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       strokeWidth: 4,
                                     ),
                                   )
-                                : Text(
+                                : const Text(
                                     'Checkout',
                                     style: TextStyles.button,
                                   ),
@@ -179,10 +181,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
                       decoration: BoxDecoration(
                           color: Constants.appBarColor,
                           borderRadius: BorderRadius.circular(16)),
@@ -198,7 +200,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ],
             ),
           )
-        : SizedBox.shrink();
+        : const SizedBox.shrink();
   }
 
   String calculatePrice() {
@@ -239,8 +241,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
         user: user.value,
         userId: user.value.id,
         rider: rider,
-        riderId: rider != null ? rider.id : null,
+        riderId: rider?.id,
         status: 'pending',
+        isServed: false,
         createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
         vendorId: cartItem.menu!.vendorId,
       );
@@ -254,6 +257,26 @@ class _CheckoutPageState extends State<CheckoutPage> {
       FirebaseFirestore.instance.collection('users').doc(rider!.id!).update({
         'numOfOrders': rider.numOfOrders! + 1,
       });
+      if (order.menu!.vendor!.fcmToken != null) {
+        Services().sendNotification(
+            token: order.menu!.vendor!.fcmToken!,
+            content: "You have a new order",
+            heading: order.menu!.name!);
+      }
+      if (order.user!.fcmToken != null) {
+        Services().sendNotification(
+          token: order.user!.fcmToken!,
+          content: "Your order has been placed",
+          heading: order.menu!.name!,
+        );
+      }
+      if (order.rider!.fcmToken != null) {
+        Services().sendNotification(
+          token: order.rider!.fcmToken!,
+          content: "You have a new ride",
+          heading: order.menu!.vendor!.name!,
+        );
+      }
     }
 
     for (var element in cart) {

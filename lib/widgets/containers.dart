@@ -1,18 +1,8 @@
-import 'package:ashfood/models/app_user.dart';
-import 'package:ashfood/models/cart_item.dart';
-import 'package:ashfood/screens/riders/order_details_riders.dart';
-import 'package:ashfood/screens/riders/vendor_orders.dart';
-import 'package:ashfood/screens/students/vendor_menus.dart';
-import 'package:ashfood/screens/vendors/order_details_vendor.dart';
-import 'package:ashfood/utils/exports.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// This file contains the containers used throughout the app
 
-import '../models/menu.dart';
-import '../models/order.dart';
-import '../screens/students/menu_details.dart';
-import '../screens/students/order_details.dart';
+import '../utils/exports.dart';
 
+// The container for the menu
 class MenuContainer extends StatelessWidget {
   final Menu menu;
   final bool forVendor;
@@ -27,7 +17,6 @@ class MenuContainer extends StatelessWidget {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: Colors.grey, width: 2)),
-          //padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -40,7 +29,7 @@ class MenuContainer extends StatelessWidget {
                         fit: BoxFit.cover)),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12.0,12,12,0),
+                padding: const EdgeInsets.fromLTRB(12.0, 12, 12, 0),
                 child: Row(
                   children: [
                     Expanded(
@@ -51,6 +40,7 @@ class MenuContainer extends StatelessWidget {
                     const SizedBox(
                       width: 30,
                     ),
+                    // The price of the menu
                     Text(
                       "GHS ${menu.price.toString()}",
                       style: TextStyles.buttonBlack,
@@ -66,16 +56,19 @@ class MenuContainer extends StatelessWidget {
                             .doc(menu.id)
                             .delete();
                       },
-                      icon: Icon(Icons.delete))
-                  : SizedBox.shrink()
+                      icon: const Icon(Icons.delete))
+                  : const SizedBox.shrink()
             ],
           )),
     );
   }
 }
 
+// The container for the vendor
 class VendorContainer extends StatelessWidget {
+  // The vendor
   final AppUser vendor;
+  // Whether the container is for riders or not
   final bool forRiders;
   const VendorContainer(
       {super.key, required this.vendor, required this.forRiders});
@@ -110,7 +103,9 @@ class VendorContainer extends StatelessWidget {
   }
 }
 
+// The container for cart item
 class CartItemContainer extends StatefulWidget {
+  // The cart item
   final CartItem cartItem;
   const CartItemContainer({super.key, required this.cartItem});
 
@@ -165,6 +160,7 @@ class _CartItemContainerState extends State<CartItemContainer> {
                 ],
               ),
             ),
+            // Add and remove buttons
             IconButton(
                 onPressed: () {
                   if (widget.cartItem.quantity! > 1) {
@@ -199,8 +195,11 @@ class _CartItemContainerState extends State<CartItemContainer> {
   }
 }
 
+// The container for an order
 class OrderContainer extends StatefulWidget {
+  // The order
   final UserOrder order;
+  // The user type
   final UserType userType;
   const OrderContainer(
       {super.key, required this.order, required this.userType});
@@ -265,7 +264,7 @@ class _OrderContainerState extends State<OrderContainer> {
                       ),
                       widget.userType == UserType.vendor &&
                               widget.order.isServed == true
-                          ? Padding(
+                          ? const Padding(
                               padding: EdgeInsets.only(left: 20),
                               child: Text(
                                 'served',
@@ -275,7 +274,7 @@ class _OrderContainerState extends State<OrderContainer> {
                                     fontSize: 14),
                               ),
                             )
-                          : SizedBox.shrink(),
+                          : const SizedBox.shrink(),
                     ],
                   ),
                 ],

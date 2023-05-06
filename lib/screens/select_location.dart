@@ -1,14 +1,6 @@
-import 'package:ashfood/controllers/auth_controller.dart';
-import 'package:ashfood/screens/gmap.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_place/google_place.dart' hide Location;
-import 'package:loader_overlay/loader_overlay.dart';
-// ignore: depend_on_referenced_packages
-
 import '../utils/exports.dart';
 
+// A page to select a location
 class SelectLocation extends StatefulWidget {
   const SelectLocation({super.key});
 
@@ -24,6 +16,7 @@ class _SelectLocationState extends State<SelectLocation> {
 
   @override
   void initState() {
+    // Initialize the Google Place API
     googlePlace = GooglePlace('AIzaSyDzYdJqertRHdlzpDm1UHt2l3vMa5_Ow7M');
     super.initState();
   }
@@ -31,7 +24,7 @@ class _SelectLocationState extends State<SelectLocation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Constants.appBar("Add Location",false),
+      appBar: Constants.appBar("Add Location", false),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
@@ -43,7 +36,6 @@ class _SelectLocationState extends State<SelectLocation> {
                   await _handlePermission(true, false);
                 } catch (e) {
                   context.loaderOverlay.hide();
-                  print(e.toString());
                   Fluttertoast.showToast(
                       msg:
                           'Network error occured. Please check your connectivity and try again');
@@ -59,6 +51,7 @@ class _SelectLocationState extends State<SelectLocation> {
                         color: Colors.white,
                       )),
                   const SizedBox(width: 20),
+                  // An option to use the current location
                   Text(
                     "Use Current Location".tr,
                     style: TextStyles.buttonBlack,
@@ -75,12 +68,10 @@ class _SelectLocationState extends State<SelectLocation> {
                       long: authController.lat.value));
                 } catch (e) {
                   context.loaderOverlay.hide();
-                  print(e.toString());
                   Fluttertoast.showToast(
                       msg:
                           'Network error occured. Please check your connectivity and try again');
                 }
-                //context.loaderOverlay.hide();
               },
               child: Row(
                 children: [
@@ -92,6 +83,7 @@ class _SelectLocationState extends State<SelectLocation> {
                         color: Colors.white,
                       )),
                   const SizedBox(width: 20),
+                  // An option to select a location on the map
                   Text(
                     "Select Location on Map".tr,
                     style: TextStyles.buttonBlack,
@@ -100,6 +92,7 @@ class _SelectLocationState extends State<SelectLocation> {
               ),
             ),
             const SizedBox(height: 20),
+            // A text field to search for a location
             FormWidget(
               textStyle: TextStyles.bodyBlack,
               lableText: "Search Location",
@@ -129,6 +122,7 @@ class _SelectLocationState extends State<SelectLocation> {
     );
   }
 
+// A method to search for a location
   void autoCompleteSearch(String value) async {
     var result = await googlePlace!.autocomplete.get(value, region: 'gh');
     if (result != null && result.predictions != null && mounted) {
@@ -138,29 +132,32 @@ class _SelectLocationState extends State<SelectLocation> {
     }
   }
 
+// A widget to display a location
   locationWidget({required int index}) {
     return GestureDetector(
+      // Get the coordinates of the location
       onTap: () async {
         context.loaderOverlay.show();
         authController.location.value.text =
             '${predictions[index].description}';
         user.value.location = '${predictions[index].description}';
         try {
-          List<Location> locations =
-              await locationFromAddress(predictions[index].description!,localeIdentifier: 'en_GH');
+          List<Location> locations = await locationFromAddress(
+              predictions[index].description!,
+              localeIdentifier: 'en_GH');
           authController.lat.value = locations[0].latitude;
-         authController.long.value = locations[0].longitude;
+          authController.long.value = locations[0].longitude;
           user.value.lat = locations[0].latitude;
           user.value.long = locations[0].longitude;
 
-          
-          print(locations[0].toJson());
           context.loaderOverlay.hide();
           Get.back();
         } catch (e) {
-          Fluttertoast.showToast(msg: "Could not find coordinates for this address. Please use other options", toastLength: Toast.LENGTH_LONG);
+          Fluttertoast.showToast(
+              msg:
+                  "Could not find coordinates for this address. Please use other options",
+              toastLength: Toast.LENGTH_LONG);
           context.loaderOverlay.hide();
-          print(e.toString());
         }
       },
       child: Padding(
@@ -184,6 +181,7 @@ class _SelectLocationState extends State<SelectLocation> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Display the location name and description
                   Text(predictions[index].structuredFormatting!.mainText ?? '',
                       style: TextStyles.titleBlack),
                   Text(
@@ -200,9 +198,11 @@ class _SelectLocationState extends State<SelectLocation> {
     );
   }
 
+// A method to handle location permission
   Future<bool> _handlePermission(bool getPlacemark, bool gotoMap) async {
     bool serviceEnabled;
     LocationPermission permission;
+    // Test if location permission is granted
     permission = await Geolocator.checkPermission();
 
     if (permission == LocationPermission.denied) {
@@ -269,6 +269,7 @@ class _SelectLocationState extends State<SelectLocation> {
     return true;
   }
 
+// A method to get the current location
   Future<void> _getCurrentPosition(
     bool getPlacemark,
   ) async {
@@ -279,13 +280,13 @@ class _SelectLocationState extends State<SelectLocation> {
     user.value.lat = position.latitude;
     user.value.long = position.longitude;
     if (getPlacemark) {
+      // Get the address of the location
       List<Placemark> placemarks =
           await placemarkFromCoordinates(position.latitude, position.longitude);
-     authController.location.value.text =
+      authController.location.value.text =
           "${placemarks[0].name}, ${placemarks[0].locality}, ${placemarks[0].country}";
-      user.value.location =  "${placemarks[0].name}, ${placemarks[0].locality}, ${placemarks[0].country}";
+      user.value.location =
+          "${placemarks[0].name}, ${placemarks[0].locality}, ${placemarks[0].country}";
     }
-
-    print(position.toJson());
   }
 }

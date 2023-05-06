@@ -1,10 +1,6 @@
 import 'package:ashfood/utils/exports.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../models/order.dart';
-import '../../utils/services.dart';
-import '../../widgets/containers.dart';
-
+// A page to display active orders for students
 class ActivieOrdersStudents extends StatefulWidget {
   const ActivieOrdersStudents({super.key});
 
@@ -24,6 +20,7 @@ class _ActivieOrdersStudentsState extends State<ActivieOrdersStudents> {
         body: _buildOrderList());
   }
 
+// A method to build the list of orders
   Widget _buildOrderList() {
     return StreamBuilder(
       stream: Services().getOrders(user.value.id!),

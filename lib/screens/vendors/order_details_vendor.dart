@@ -1,11 +1,6 @@
-import 'package:ashfood/screens/vendors/track_order_vendor.dart';
 import 'package:ashfood/utils/exports.dart';
-import 'package:ashfood/widgets/pagination.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import '../../models/order.dart';
 
+// A page to display the details of an order for vendors
 class OrderDetailsVendor extends StatefulWidget {
   final UserOrder order;
   const OrderDetailsVendor({
@@ -34,6 +29,7 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
                 widget.order.menu!.name!,
                 style: TextStyles.titleBlack,
               ),
+              // a carousel slider to display the menu images
               CarouselSlider(
                 items: widget.order.menu!.media!
                     .map((e) => Image.network(e))
@@ -44,7 +40,6 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
                   disableCenter: true,
                   viewportFraction: 0.9,
                   initialPage: 0,
-                  //enableInfiniteScroll: true,
                   reverse: false,
                   autoPlayAnimationDuration: const Duration(milliseconds: 800),
                   autoPlayCurve: Curves.fastOutSlowIn,
@@ -62,6 +57,7 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
                 current: current,
               ),
               const SizedBox(height: 10),
+              // A row to display the quantity and price of the menu
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -88,12 +84,14 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
                   ),
                 ],
               ),
+              // A text to display the description of the menu
               const SizedBox(height: 20),
               const Text('Description', style: TextStyles.titleBlack),
               const SizedBox(height: 7),
               Text(widget.order.menu!.description!,
                   style: TextStyles.bodyBlack),
               const SizedBox(height: 30),
+              // A text to display the rider details
               const Text('Delivery Rider', style: TextStyles.titleBlack),
               const SizedBox(height: 7),
               Text(widget.order.rider!.name!, style: TextStyles.bodyBlack),
@@ -104,9 +102,9 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
               Row(
                 children: [
                   IgnorePointer(
+                    // A rating bar to display the rider's rating
                     child: RatingBar.builder(
                       itemSize: 20,
-                      //glowColor: Constants.appBarColor,
                       unratedColor: Colors.grey,
                       maxRating: 5,
                       minRating: 0,
@@ -114,7 +112,7 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
                           ? 0
                           : widget.order.rider!.averageRating!.toDouble(),
                       itemBuilder: (_, rating) {
-                        return Icon(
+                        return const Icon(
                           Icons.star,
                           size: 10,
                           color: Constants.appBarColor,
@@ -123,13 +121,13 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
                       onRatingUpdate: (rating) {},
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Container(
                     height: 16,
                     width: 2,
                     color: Colors.grey,
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Text(
                       widget.order.rider!.totalRating == null
                           ? '0'
@@ -137,6 +135,7 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
                       style: TextStyles.bodyBlack),
                 ],
               ),
+              // A text to display the delivery location
               const SizedBox(height: 20),
               const Text('Delivery Location', style: TextStyles.titleBlack),
               const SizedBox(height: 7),
@@ -148,7 +147,7 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
               Text(widget.order.user!.location!, style: TextStyles.bodyBlack),
               const SizedBox(height: 20),
               widget.order.status == 'completed'
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -156,6 +155,7 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
                           onTap: () => Get.to(() => TrackOrderVendor(
                                 orderId: widget.order.id!,
                               )),
+                          // A button to track the order
                           child: Container(
                             decoration: BoxDecoration(
                               color: Constants.appBarColor,
@@ -177,6 +177,7 @@ class _OrderDetailsVendorState extends State<OrderDetailsVendor> {
                             ),
                           ),
                         ),
+                        // A button to mark the order as served
                         GestureDetector(
                           onTap: () {
                             if (widget.order.isServed != true) {

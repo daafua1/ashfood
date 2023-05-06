@@ -1,9 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../../models/order.dart';
 import '../../utils/exports.dart';
-import 'package:another_stepper/another_stepper.dart';
 
+// A page to track orders for vendors
 class TrackOrderVendor extends StatefulWidget {
   final String orderId;
   const TrackOrderVendor({super.key, required this.orderId});
@@ -23,6 +20,7 @@ class _TrackOrderVendorState extends State<TrackOrderVendor> {
     getOrder();
   }
 
+// A method to get the order
   void getOrder() async {
     final docOrder = await FirebaseFirestore.instance
         .collection('orders')
@@ -34,10 +32,10 @@ class _TrackOrderVendorState extends State<TrackOrderVendor> {
       });
       calculateActiveIndex();
     } else {
-      print('no order');
     }
   }
 
+// A method to calculate the active index of the stepper based on the order status
   void calculateActiveIndex() {
     if (order != null) {
       final createdAt =
@@ -48,16 +46,10 @@ class _TrackOrderVendorState extends State<TrackOrderVendor> {
       if (difference > 30) {
         setState(() {
           activeIndex = 2;
-          print(difference);
         });
       } else {
         activeIndex = 1;
       }
-      // if (Utilities.timeToDispatch(createdAt)) {
-      //   setState(() {
-      //     activeIndex = 3;
-      //   });
-      // }
       if (order!.riderStatus == 1) {
         setState(() {
           activeIndex = 3;
@@ -74,9 +66,9 @@ class _TrackOrderVendorState extends State<TrackOrderVendor> {
         });
       }
     }
-    print('activeIndex: $activeIndex');
   }
 
+// A method to build the stepper
   List<StepperData> buildStepper() {
     List<StepperData> stepperData = [
       StepperData(
@@ -219,16 +211,16 @@ class _TrackOrderVendorState extends State<TrackOrderVendor> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
-                      Text(
-                          "${order!.menu!.name!}: ${order!.menu!.vendor!.name}",
-                          style: TextStyles.buttonBlack),
+                      // A text to display the menu name
+                      Text(order!.menu!.name!, style: TextStyles.buttonBlack),
                       Padding(
                         padding: const EdgeInsets.only(
                           top: 10,
                         ),
+                        // The stepper widget
                         child: AnotherStepper(
                           stepperList: buildStepper(),
                           stepperDirection: Axis.vertical,
@@ -242,13 +234,7 @@ class _TrackOrderVendorState extends State<TrackOrderVendor> {
                           barThickness: 8,
                         ),
                       ),
-                      SizedBox(height: 30),
-
-                      // SizedBox(height: 30),
-
-                      //activeIndex! >= 5 ?
-
-                      //:SizedBox.shrink(),
+                      const SizedBox(height: 30),
                     ],
                   ),
                 ),

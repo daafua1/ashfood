@@ -1,5 +1,6 @@
 import '../utils/exports.dart';
 
+// The custom popup widget is used to display a popup with a message and two buttons
 class CustomPopUp extends StatelessWidget {
   const CustomPopUp({
     super.key,
@@ -11,12 +12,19 @@ class CustomPopUp extends StatelessWidget {
     this.showCancelButton = true,
     this.showConfirmButton = true,
   });
+  // The message to display
   final String message;
+  // The text for the confirm button
   final String confirmText;
+  // The text for the cancel button
   final String cancelText;
+  // The function to call when the confirm button is tapped
   final Function() onTapConfirm;
+  // The function to call when the cancel button is tapped
   final Function() onTapCancel;
+  // Whether to show the cancel button
   final bool showCancelButton;
+  // Whether to show the confirm button
   final bool showConfirmButton;
 
   @override
@@ -45,8 +53,8 @@ class CustomPopUp extends StatelessWidget {
                     child: Container(
                       margin: const EdgeInsets.all(15),
                       padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.horizontal(
+                      decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.horizontal(
                             left: Radius.circular(20),
                             right: Radius.circular(20),
                           ),

@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 
 @JsonSerializable(explicitToJson: true)
+
+// The user model
 class AppUser {
   String? name;
   String? email;
@@ -33,6 +35,7 @@ class AppUser {
     this.totalRating,
   });
 
+// Converts the user model to a json object
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
       name: json["name"],
       email: json["email"],
@@ -49,6 +52,7 @@ class AppUser {
       averageRating: json["averageRating"],
       totalRating: json["totalRating"]);
 
+// Converts the json object to a user model
   Map<String, dynamic> toJson() => {
         "name": name,
         "email": email,

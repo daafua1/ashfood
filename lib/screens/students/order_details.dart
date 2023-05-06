@@ -1,14 +1,6 @@
-import 'package:ashfood/screens/students/track_order.dart';
 import 'package:ashfood/utils/exports.dart';
-import 'package:ashfood/utils/services.dart';
-import 'package:ashfood/widgets/pagination.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import '../../models/app_user.dart';
-import '../../models/order.dart';
 
+// A page to display the details of an order
 class OrderDetails extends StatefulWidget {
   final UserOrder order;
   const OrderDetails({
@@ -21,7 +13,9 @@ class OrderDetails extends StatefulWidget {
 }
 
 class _OrderDetailsState extends State<OrderDetails> {
+  // The rating of the order by the user if the order is completed
   num rating = 0;
+  // The controller for the review text field
   TextEditingController reviewController = TextEditingController();
   int current = 0;
   AppUser? rider;
@@ -30,6 +24,7 @@ class _OrderDetailsState extends State<OrderDetails> {
   void initState() {
     super.initState();
     getRider();
+
     if (widget.order.userComment != null) {
       setState(() {
         reviewController.text = widget.order.userComment!;
@@ -57,6 +52,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                 widget.order.menu!.name!,
                 style: TextStyles.titleBlack,
               ),
+              // a carousel slider to display the menu images
               CarouselSlider(
                 items: widget.order.menu!.media!
                     .map((e) => Image.network(e))
@@ -88,6 +84,7 @@ class _OrderDetailsState extends State<OrderDetails> {
               Row(
                 children: [
                   const Spacer(),
+                  // a text to display the price of the menu
                   Container(
                     decoration: BoxDecoration(
                       color: Constants.appBarColor,
@@ -106,10 +103,11 @@ class _OrderDetailsState extends State<OrderDetails> {
                   style: TextStyles.bodyBlack),
               const SizedBox(height: 30),
               rider == null
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // a text to display the rider details
                         const Text('Delivery Rider',
                             style: TextStyles.titleBlack),
                         const SizedBox(height: 7),
@@ -120,6 +118,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                         Row(
                           children: [
                             IgnorePointer(
+                              // a rating bar to display the rider rating
                               child: RatingBar.builder(
                                 itemSize: 20,
                                 //glowColor: Constants.appBarColor,
@@ -131,7 +130,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                                     ? 0
                                     : rider!.averageRating!.toDouble(),
                                 itemBuilder: (_, rating) {
-                                  return Icon(
+                                  return const Icon(
                                     Icons.star,
                                     size: 10,
                                     color: Constants.appBarColor,
@@ -140,13 +139,13 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 onRatingUpdate: (rating) {},
                               ),
                             ),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             Container(
                               height: 16,
                               width: 2,
                               color: Colors.grey,
                             ),
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
                             Text(
                                 rider!.totalRating == null
                                     ? '0'
@@ -157,12 +156,14 @@ class _OrderDetailsState extends State<OrderDetails> {
                       ],
                     ),
               const SizedBox(height: 20),
+              // a text to display the delivery location
               const Text('Delivery Location', style: TextStyles.titleBlack),
               const SizedBox(height: 7),
               Text(widget.order.user!.location!, style: TextStyles.bodyBlack),
               const SizedBox(height: 20),
+              // a button to track the order if the order is not completed
               widget.order.status == 'completed'
-                  ? SizedBox.shrink()
+                  ? const SizedBox.shrink()
                   : GestureDetector(
                       onTap: () => Get.to(() => TrackOrder(
                             orderId: widget.order.id!,
@@ -188,13 +189,14 @@ class _OrderDetailsState extends State<OrderDetails> {
                         ),
                       ),
                     ),
+              // a rating bar to rate the order if the order is completed
               widget.order.status == 'completed'
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Rate your experience',
+                        const Text('Rate your experience',
                             style: TextStyles.buttonBlack),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         RatingBar.builder(
                           itemSize: 28,
                           //glowColor: Constants.appBarColor,
@@ -205,7 +207,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                           initialRating: rating.toDouble(),
 
                           itemBuilder: (_, rating) {
-                            return Icon(
+                            return const Icon(
                               Icons.star,
                               size: 10,
                               color: Constants.appBarColor,
@@ -217,19 +219,20 @@ class _OrderDetailsState extends State<OrderDetails> {
                             });
                           },
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         FormWidget(
                           controller: reviewController,
                           lableText: 'Comment',
                           textStyle: TextStyles.bodyBlack,
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         GestureDetector(
                           onTap: () async {
-                            if (rating != 0 && rating != widget.order.userRating) {
-                             
-                                submitRiderReview();
-                              
+                            if (rating != 0 &&
+                                rating != widget.order.userRating) {
+                              // a function to submit the rider review
+                              submitRiderReview();
+
                               FirebaseFirestore.instance
                                   .collection('orders')
                                   .doc(widget.order.id)
@@ -242,10 +245,9 @@ class _OrderDetailsState extends State<OrderDetails> {
                                 widget.order.userRating = rating;
                               });
                               Fluttertoast.showToast(msg: 'Review submitted');
-                            } else {
-                              print('not rated');
                             }
                           },
+                          // a button to submit the rider review
                           child: Container(
                             decoration: BoxDecoration(
                               color: Constants.appBarColor,
@@ -253,7 +255,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                             ),
                             padding: const EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 20),
-                            child: Center(
+                            child: const Center(
                                 child:
                                     Text('Submit', style: TextStyles.button)),
                           ),
@@ -270,6 +272,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     );
   }
 
+// a function to submit the rider review
   void submitRiderReview() async {
     num averageRating = 0.0;
 
@@ -279,7 +282,7 @@ class _OrderDetailsState extends State<OrderDetails> {
         //     (rider!.averageRating! + rating) / (rider!.totalRating! + 1);
 
         FirebaseFirestore.instance.collection('users').doc(rider!.id).update({
-          'averageRating': (rider!.averageRating! + rating)/2,
+          'averageRating': (rider!.averageRating! + rating) / 2,
           'totalRating': rider!.totalRating! + 1
         });
       } else {
@@ -292,6 +295,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     }
   }
 
+// a function to get the rider details
   void getRider() async {
     AppUser? deliveryGuy = await Services.getAnyUser(widget.order.rider!.id!);
     setState(() {

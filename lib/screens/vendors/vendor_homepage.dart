@@ -1,14 +1,6 @@
-import 'dart:io';
-
-import 'package:ashfood/widgets/containers.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../../models/menu.dart';
 import '../../utils/exports.dart';
-import '../../utils/services.dart';
-import '../../widgets/drawer.dart';
 
-// A page to show the feed of posts
+// A page to show the available menus for a vendor
 class VendorHomepage extends StatefulWidget {
   const VendorHomepage({super.key});
 
@@ -57,56 +49,15 @@ class _VendorHomepageState extends State<VendorHomepage> {
           ),
         ),
       ),
-      // A stream builder to show the posts in real time
+      // A stream builder to show the list of menus
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Container(
-            //   margin: const EdgeInsets.only(top: 20, bottom: 20),
-            //   decoration: BoxDecoration(
-            //     color: Constants.appBarColor,
-            //     borderRadius: BorderRadius.circular(20),
-            //   ),
-            //   padding: const EdgeInsets.all(15),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            //       Expanded(
-            //         child: Column(
-            //           children: const [
-            //             Text(
-            //               "Active Orders",
-            //               style: TextStyles.button,
-            //             ),
-            //             SizedBox(height: 5),
-            //             Text(
-            //               "0",
-            //               style: TextStyles.title,
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //       const SizedBox(width: 20),
-            //       Column(
-            //         mainAxisAlignment: MainAxisAlignment.center,
-            //         children: const [
-            //           Text(
-            //             "Pending Delivery",
-            //             style: TextStyles.button,
-            //           ),
-            //           SizedBox(height: 5),
-            //           Text(
-            //             "0",
-            //             style: TextStyles.title,
-            //           ),
-            //         ],
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             const Text(
               'Available Menus',
               style: TextStyles.titleBlack,
@@ -126,7 +77,10 @@ class _VendorHomepageState extends State<VendorHomepage> {
                               Menu.fromJson(snapshot.data!.docs[index].data());
                           return Padding(
                             padding: const EdgeInsets.only(top: 10),
-                            child: MenuContainer(menu: menu, forVendor: true,),
+                            child: MenuContainer(
+                              menu: menu,
+                              forVendor: true,
+                            ),
                           );
                         },
                       );
@@ -139,7 +93,7 @@ class _VendorHomepageState extends State<VendorHomepage> {
         ),
       ),
       // The drawer at the homepage
-      drawer: VendorDrawer(
+      drawer: AppDrawer(
         userType: user.value.userType!,
       ),
     );

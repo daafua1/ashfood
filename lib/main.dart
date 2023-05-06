@@ -1,21 +1,5 @@
-import 'dart:convert';
-
-import 'package:ashfood/models/app_user.dart';
-import 'package:ashfood/screens/get_started.dart';
-import 'package:ashfood/screens/riders/rider_homepage.dart';
-import 'package:ashfood/screens/vendors/vendor_homepage.dart';
-import 'package:ashfood/utils/exports.dart';
-import 'package:ashfood/utils/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/services.dart';
-import 'package:loader_overlay/loader_overlay.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
-
 import 'firebase_options.dart';
-import 'screens/students/customer_homepage.dart';
+import 'utils/exports.dart';
 
 SharedPreferences? prefs;
 void main() async {
@@ -29,15 +13,13 @@ void main() async {
     user.value = AppUser.fromJson(jsonDecode(userString));
     Services.getUser(user.value.id!);
   }
-  //Remove this method to stop OneSignal Debugging
+ // One signal. For debugging purposes
   OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
 
   OneSignal.shared.setAppId("314f3140-56e6-4302-82a9-3f76febe6618");
 
-// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
-  OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {
-    print("Accepted permission: $accepted");
-  });
+  OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {});
+  // Set color and brightness of status and navigation bar
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarBrightness: Brightness.dark,
@@ -59,6 +41,7 @@ class _WelcomeState extends State<Welcome> {
   @override
   void initState() {
     super.initState();
+    // One signal notification settings
     OneSignal.shared.setNotificationWillShowInForegroundHandler(
         (OSNotificationReceivedEvent event) {
       // Will be called whenever a notification is received in foreground
@@ -92,7 +75,6 @@ class _WelcomeState extends State<Welcome> {
   @override
   Widget build(BuildContext context) {
     final bool? isFirstTime = prefs!.getBool('isFirstTime');
-    final isLogin = FirebaseAuth.instance.currentUser == null;
     return GlobalLoaderOverlay(
       switchInCurve: Curves.fastOutSlowIn,
       useDefaultLoading: false,
@@ -114,6 +96,7 @@ class _WelcomeState extends State<Welcome> {
   }
 }
 
+// The app's root widget. It determines which page to show based on the user's type
 Widget appRoot() {
   if (user.value.userType == null) {
     return const GetStarted();

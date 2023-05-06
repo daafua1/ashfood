@@ -1,9 +1,8 @@
-import 'package:ashfood/models/app_user.dart';
-import 'package:json_annotation/json_annotation.dart';
-
-import 'menu.dart';
+import '../utils/exports.dart';
 
 @JsonSerializable(explicitToJson: true)
+
+// The order model
 class UserOrder {
   final Menu? menu;
   int? quantity;
@@ -37,6 +36,7 @@ class UserOrder {
     this.isServed,
   });
 
+// Converts the order model to a json object
   factory UserOrder.fromJson(Map<String, dynamic> json) => UserOrder(
         menu: Menu.fromJson(json['menu']),
         quantity: json['quantity'],
@@ -52,9 +52,8 @@ class UserOrder {
         userRating: json['userRating'],
         userComment: json['userComment'],
         isServed: json['isServed'],
-        
       );
-
+  // Converts the json object to a order model
   Map<String, dynamic> toJson() => {
         'menu': menu!.toJson(),
         'quantity': quantity,
@@ -66,9 +65,9 @@ class UserOrder {
         'status': status,
         'createdAt': createdAt,
         'vendorId': vendorId,
-        'riderStatus':riderStatus,
-        'userRating':userRating,
-        'userComment':userComment,
-        'isServed':isServed,
+        'riderStatus': riderStatus,
+        'userRating': userRating,
+        'userComment': userComment,
+        'isServed': isServed,
       };
 }

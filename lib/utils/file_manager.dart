@@ -1,10 +1,3 @@
-
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
-
 import 'exports.dart';
 
 // This class is used to handle the picking of images from the gallery and camera
@@ -80,7 +73,7 @@ class FileManager {
     }
   }
 
-   ///method returns bool and can be used for checking either
+  ///method returns bool and can be used for checking either
   ///particular permission is granted or not
   static Future<bool> isPermissionGranted(Permission permission) async {
     return !(await permission.status.isDenied ||

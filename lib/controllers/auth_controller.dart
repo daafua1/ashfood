@@ -1,20 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:ashfood/main.dart';
-import 'package:ashfood/screens/riders/rider_homepage.dart';
-import 'package:ashfood/screens/students/customer_homepage.dart';
-import 'package:ashfood/utils/exports.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-import '../models/app_user.dart';
-import '../screens/vendors/vendor_homepage.dart';
-import '../utils/services.dart';
+import '../utils/exports.dart';
 
 class AuthController extends GetxController {
-  // The controllers for the student id text fields
+  // The controllers for the passord text fields
   var password = TextEditingController().obs;
 
   // The controllers for the email text fields
@@ -28,19 +15,23 @@ class AuthController extends GetxController {
 
   // The controllers for the phoneNumber text fields
   var phone = TextEditingController().obs;
+
   // The longitude coordinate of the user's location
   var long = 0.0.obs;
 
   // The latitude coordinate of the user's location
   var lat = 0.0.obs;
+
   // Whether the user inputs are valid
   var validationError = false.obs;
 
   // Whether the loader is busy
   var isLoading = false.obs;
+
 // The user's profile image
   var profileImage = ''.obs;
 
+// The user's type
   var userType = UserType.customer.obs;
 
   // Validates the user inputs and logs the user in
@@ -82,12 +73,11 @@ class AuthController extends GetxController {
         });
 
         isLoading.value = false;
-        // Navigate to the feed page
+        // Navigate to the the appropriate page
         redirectUser();
       } catch (e) {
         isLoading.value = false;
-        print(e.toString());
-        // Show an error message if the user is not found
+        // Show an error message if any
         Fluttertoast.showToast(
           msg: e.toString(),
           backgroundColor: Colors.white,
@@ -101,6 +91,7 @@ class AuthController extends GetxController {
     }
   }
 
+// Performs vendor specific validations
   bool vendorVallidation() {
     if (userType.value != UserType.vendor) {
       return true;
@@ -116,6 +107,7 @@ class AuthController extends GetxController {
     }
   }
 
+// Performs rider specific validations
   bool riderValidation() {
     if (userType.value != UserType.rider) {
       return true;
@@ -128,21 +120,22 @@ class AuthController extends GetxController {
     }
   }
 
+// Creates a new user
   void createUser(String id, String? imageURL) {
     user.value = AppUser(
-      email: email.value.text,
-      id: id,
-      name: name.value.text,
-      location: location.value.text,
-      phoneNumber: phone.value.text,
-      profileImage: imageURL,
-      userType: userType.value.name,
-      lat: lat.value,
-      long: long.value,
-      numOfOrders: 0
-    );
+        email: email.value.text,
+        id: id,
+        name: name.value.text,
+        location: location.value.text,
+        phoneNumber: phone.value.text,
+        profileImage: imageURL,
+        userType: userType.value.name,
+        lat: lat.value,
+        long: long.value,
+        numOfOrders: 0);
   }
 
+// Redirects the user to the appropriate page based on thier user type
   void redirectUser() {
     if (user.value.userType == UserType.customer.name) {
       Get.offAll(() => const CustomerHomePage());

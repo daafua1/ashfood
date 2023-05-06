@@ -1,13 +1,6 @@
-import 'package:ashfood/widgets/custom_popup.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
-
-import '../../models/order.dart';
 import '../../utils/exports.dart';
-import 'package:another_stepper/another_stepper.dart';
 
+// A page to track order for students
 class TrackOrder extends StatefulWidget {
   final String orderId;
   const TrackOrder({super.key, required this.orderId});
@@ -18,7 +11,7 @@ class TrackOrder extends StatefulWidget {
 
 class _TrackOrderState extends State<TrackOrder> {
   int? activeIndex;
- 
+
   UserOrder? order;
 
   @override
@@ -27,6 +20,7 @@ class _TrackOrderState extends State<TrackOrder> {
     getOrder();
   }
 
+// A method to get the order
   void getOrder() async {
     final docOrder = await FirebaseFirestore.instance
         .collection('orders')
@@ -38,10 +32,10 @@ class _TrackOrderState extends State<TrackOrder> {
       });
       calculateActiveIndex();
     } else {
-      print('no order');
     }
   }
 
+// A method to calculate the active index of the stepper based on the order status
   void calculateActiveIndex() {
     if (order != null) {
       final createdAt =
@@ -52,16 +46,10 @@ class _TrackOrderState extends State<TrackOrder> {
       if (difference > 30) {
         setState(() {
           activeIndex = 2;
-          print(difference);
         });
       } else {
         activeIndex = 1;
       }
-      // if (Utilities.timeToDispatch(createdAt)) {
-      //   setState(() {
-      //     activeIndex = 3;
-      //   });
-      // }
       if (order!.riderStatus == 1) {
         setState(() {
           activeIndex = 3;
@@ -78,9 +66,9 @@ class _TrackOrderState extends State<TrackOrder> {
         });
       }
     }
-    print('activeIndex: $activeIndex');
   }
 
+// A method to build the stepper
   List<StepperData> buildStepper() {
     List<StepperData> stepperData = [
       StepperData(
@@ -202,7 +190,6 @@ class _TrackOrderState extends State<TrackOrder> {
 
   @override
   Widget build(BuildContext context) {
-    print(activeIndex.toString());
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -224,9 +211,10 @@ class _TrackOrderState extends State<TrackOrder> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
+                      // A text to show the menu name and vendor name
                       Text(
                           "${order!.menu!.name!}: ${order!.menu!.vendor!.name}",
                           style: TextStyles.buttonBlack),
@@ -234,6 +222,7 @@ class _TrackOrderState extends State<TrackOrder> {
                         padding: const EdgeInsets.only(
                           top: 10,
                         ),
+                        // The stepper widget
                         child: AnotherStepper(
                           stepperList: buildStepper(),
                           stepperDirection: Axis.vertical,
@@ -247,7 +236,8 @@ class _TrackOrderState extends State<TrackOrder> {
                           barThickness: 8,
                         ),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
+                      // A cancel button to cancel the order if the order is not 30 minutes old
                       activeIndex! <= 1
                           ? Container(
                               decoration: BoxDecoration(
@@ -264,6 +254,7 @@ class _TrackOrderState extends State<TrackOrder> {
                                       showDialog(
                                           context: context,
                                           builder: (_) {
+                                            // A custom popup to confirm the cancellation of the order
                                             return CustomPopUp(
                                               message:
                                                   'Are you sure you want to cancel this order?',
@@ -271,6 +262,7 @@ class _TrackOrderState extends State<TrackOrder> {
                                               cancelText: "No, Don't Cancel",
                                               onTapCancel: () => Get.back(),
                                               onTapConfirm: () {
+                                                // Updating the status of the order to cancelled
                                                 FirebaseFirestore.instance
                                                     .collection('orders')
                                                     .doc(order!.id)
@@ -285,33 +277,27 @@ class _TrackOrderState extends State<TrackOrder> {
                                             );
                                           });
                                     },
-                                    child: Text('Cancel Order',
+                                    child: const Text('Cancel Order',
                                         style: TextStyles.button),
                                   ),
-                                  SizedBox(width: 10),
-                                  JustTheTooltip(
+                                  const SizedBox(width: 10),
+                                  const JustTheTooltip(
                                     showDuration: Duration(seconds: 3),
-                                    child: Icon(
-                                      Icons.info,
-                                      color: Colors.white,
-                                    ),
-                                    content: const Padding(
+                                    content: Padding(
                                       padding: EdgeInsets.all(8.0),
                                       child: Text(
                                         'You can cancel your order withing 30 minutes of placing it.',
                                       ),
                                     ),
+                                    child: Icon(
+                                      Icons.info,
+                                      color: Colors.white,
+                                    ),
                                   )
                                 ],
                               ),
                             )
-                          : SizedBox.shrink(),
-
-                      // SizedBox(height: 30),
-
-                      //activeIndex! >= 5 ?
-
-                      //:SizedBox.shrink(),
+                          : const SizedBox.shrink(),
                     ],
                   ),
                 ),

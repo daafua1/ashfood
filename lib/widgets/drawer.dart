@@ -1,18 +1,9 @@
-import 'package:ashfood/screens/riders/past_orders.dart';
-import 'package:ashfood/screens/students/active_orders.dart';
-import 'package:ashfood/screens/vendors/active_orders.dart';
-import 'package:ashfood/screens/vendors/add_menu.dart';
-import 'package:ashfood/screens/vendors/past_orders.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import '../screens/get_started.dart';
-import '../screens/students/past_orders.dart';
 import '../utils/exports.dart';
 
-class VendorDrawer extends StatelessWidget {
+// A drawer widget for the app
+class AppDrawer extends StatelessWidget {
   final String userType;
-  const VendorDrawer({super.key, required this.userType});
+  const AppDrawer({super.key, required this.userType});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +17,7 @@ class VendorDrawer extends StatelessWidget {
               child: Column(
                 children: [
                   Obx(
+                    // The user's profile image
                     () => CircleAvatar(
                       backgroundImage: CachedNetworkImageProvider(
                         user.value.profileImage != null &&
@@ -38,6 +30,7 @@ class VendorDrawer extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Obx(
+                    //  The user's name
                     () => Text(
                       user.value.name!,
                       style: TextStyles.button,
@@ -51,6 +44,7 @@ class VendorDrawer extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         color: Colors.white),
                     child: Center(
+                      // The user's phone number
                       child: Obx(
                         () => Text(
                           user.value.phoneNumber!,
@@ -61,8 +55,9 @@ class VendorDrawer extends StatelessWidget {
                   )
                 ],
               )),
+          // A list tile for active orders.
           userType == 'rider'
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : ListTile(
                   onTap: () {
                     Get.back();
@@ -84,7 +79,7 @@ class VendorDrawer extends StatelessWidget {
                       color: Color(0xff000000), size: 24),
                 ),
           userType == 'rider'
-              ? SizedBox.shrink()
+              ? const SizedBox.shrink()
               : const Divider(
                   color: Color(0x4d9e9e9e),
                   height: 16,
@@ -92,15 +87,16 @@ class VendorDrawer extends StatelessWidget {
                   indent: 0,
                   endIndent: 0,
                 ),
+          // A list tile for past orders
           ListTile(
             onTap: () {
               Get.back();
               if (userType == 'rider') {
-                Get.to(() => PastOrdersRider());
+                Get.to(() => const PastOrdersRider());
               } else if (userType == 'customer') {
-                Get.to(() => PastOrdersStudents());
+                Get.to(() => const PastOrdersStudents());
               } else if (userType == 'vendor') {
-                Get.to(() => PastOrdersVendor());
+                Get.to(() => const PastOrdersVendor());
               }
             },
             contentPadding:
@@ -121,6 +117,7 @@ class VendorDrawer extends StatelessWidget {
             indent: 0,
             endIndent: 0,
           ),
+          // A list tile for add menu. Only visible to vendors
           userType == UserType.vendor.name
               ? ListTile(
                   onTap: () async {
@@ -149,6 +146,7 @@ class VendorDrawer extends StatelessWidget {
                   endIndent: 0,
                 )
               : const SizedBox.shrink(),
+          // A list tile to show support email
           ListTile(
             onTap: () {
               Get.back();
@@ -180,19 +178,13 @@ class VendorDrawer extends StatelessWidget {
             endIndent: 0,
           ),
           const SizedBox(height: 30),
+          // A button to log out
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 20, 10, 30),
             child: MaterialButton(
               onPressed: () {
                 FirebaseAuth.instance.signOut();
-               Get.offAll(() => const GetStarted());
-                    //  Get.offAll(() => LoginScreen(usrType:
-                    //      user.value.userType == UserType.customer.name
-                    //         ? UserType.customer
-                    //         : user.value.userType == UserType.vendor.name
-                    //             ? UserType.vendor
-                    //             : UserType.rider
-                    // ));
+                Get.offAll(() => const GetStarted());
               },
               color: Constants.appBarColor,
               elevation: 0,

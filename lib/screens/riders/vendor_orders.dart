@@ -1,14 +1,6 @@
-import 'dart:io';
-
-import 'package:ashfood/models/app_user.dart';
-import 'package:ashfood/models/order.dart';
-import 'package:ashfood/widgets/containers.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../../utils/exports.dart';
-import '../../utils/services.dart';
 
-// A page to show the feed of posts
+// A page to show the orders for a rider from a vendor
 class VendorOrders extends StatefulWidget {
   final AppUser vendor;
 
@@ -22,26 +14,17 @@ class _VendorOrdersState extends State<VendorOrders> {
   List<QueryDocumentSnapshot<Map<String, dynamic>>> orders = [];
 
   @override
-  void initState() {
-    super.initState();
-    if (Platform.isAndroid) {
-      Services().registerNotification();
-      Services().configLocalNotification();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffffffff),
       // The app bar
       appBar: Constants.appBar("${widget.vendor.name!}'s Orders", false),
-      // A stream builder to show the posts in real time
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // A stream builder to show the the orders
             Expanded(
               child: StreamBuilder(
                   stream: Services()
@@ -58,8 +41,8 @@ class _VendorOrdersState extends State<VendorOrders> {
                               UserOrder.fromJson(orders[index].data());
                           return Padding(
                             padding: const EdgeInsets.only(top: 10),
-                            child:
-                                OrderContainer(order: order, userType: UserType.rider),
+                            child: OrderContainer(
+                                order: order, userType: UserType.rider),
                           );
                         },
                       );
@@ -68,13 +51,9 @@ class _VendorOrdersState extends State<VendorOrders> {
                     }
                   }),
             ),
-            
           ],
         ),
       ),
-      // The drawer at the homepage
     );
   }
 }
-
-

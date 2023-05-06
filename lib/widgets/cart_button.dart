@@ -1,7 +1,6 @@
-import '../screens/students/checkout.dart';
 import '../utils/exports.dart';
-import '../utils/services.dart';
 
+// The cart button widget
 class CartButton extends StatefulWidget {
   const CartButton({super.key});
 

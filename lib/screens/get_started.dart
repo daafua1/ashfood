@@ -1,5 +1,6 @@
 import '../utils/exports.dart';
 
+// A get started page to select the user type
 class GetStarted extends StatelessWidget {
   const GetStarted({super.key});
 
@@ -23,6 +24,7 @@ class GetStarted extends StatelessWidget {
             const SizedBox(height: 50),
             const Text('Get Started as a', style: TextStyles.title),
             const SizedBox(height: 30),
+            // A container to select for the vendor type
             getStartedContainer(
                 text: 'Restaurant',
                 icon: Icons.restaurant,
@@ -30,6 +32,7 @@ class GetStarted extends StatelessWidget {
                       userType: UserType.vendor,
                     ))),
             const SizedBox(height: 20),
+            // A container to select for the rider type
             getStartedContainer(
                 text: 'Rider',
                 icon: Icons.motorcycle,
@@ -37,6 +40,7 @@ class GetStarted extends StatelessWidget {
                       userType: UserType.rider,
                     ))),
             const SizedBox(height: 20),
+            // A container to select for the customer type
             getStartedContainer(
                 text: 'Customer',
                 icon: Icons.person,
@@ -49,6 +53,7 @@ class GetStarted extends StatelessWidget {
     );
   }
 
+// A container to select the user type
   getStartedContainer(
       {required String text,
       required IconData icon,

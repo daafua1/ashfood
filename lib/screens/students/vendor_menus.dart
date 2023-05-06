@@ -1,11 +1,6 @@
-import 'package:ashfood/models/app_user.dart';
 import 'package:ashfood/utils/exports.dart';
-import 'package:ashfood/utils/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../models/menu.dart';
-import '../../widgets/containers.dart';
-
+// A page to display the available menus for a vendor
 class VendorMenus extends StatefulWidget {
   final AppUser vendor;
   const VendorMenus({super.key, required this.vendor});
@@ -20,6 +15,7 @@ class _VendorMenusState extends State<VendorMenus> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Constants.appBar(widget.vendor.name!,true),
+      // The list of menus
       body: StreamBuilder(
         stream: Services().getMenus(widget.vendor.id!),
         builder: (_, snapshot) {

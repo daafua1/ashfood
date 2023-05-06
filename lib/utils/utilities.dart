@@ -1,4 +1,7 @@
+// A class that contains static methods that are used throughout the app
 class Utilities {
+
+  // This functions is used to check if the current time is within the ordering period
   static bool shouldOrder() {
     final year = DateTime.now().year;
     final month = DateTime.now().month;
@@ -23,6 +26,7 @@ class Utilities {
     return false;
   }
 
+// This function is used to get the next ordering period
   static String orderAt() {
     final year = DateTime.now().year;
     final month = DateTime.now().month;
@@ -45,32 +49,4 @@ class Utilities {
     return 'Order tomorrow between 8am and 10am';
   }
 
-  static bool timeToDispatch(DateTime orderTime) {
-    final year = DateTime.now().year;
-    final month = DateTime.now().month;
-    final day = DateTime.now().day;
-
-    final period1End = DateTime(year, month, day, 10);
-
-    final period2End = DateTime(year, month, day, 14);
-
-    final period3End = DateTime(year, month, day, 18);
-    final deliveryPeriod1 = DateTime(year, month, day, 12);
-    final deliveryPeriod2 = DateTime(year, month, day, 16);
-    final deliveryPeriod3 = DateTime(year, month, day, 20);
-    DateTime deliveryPeriod = DateTime.now();
-
-    if (orderTime.isBefore(period1End)) {
-      deliveryPeriod = deliveryPeriod1;
-    } else if (orderTime.isBefore(period2End)) {
-      deliveryPeriod = deliveryPeriod2;
-    } else if (orderTime.isBefore(period3End)) {
-      deliveryPeriod = deliveryPeriod3;
-    }
-
-    if (DateTime.now().isAfter(deliveryPeriod)) {
-      return true;
-    }
-    return false;
-  }
 }

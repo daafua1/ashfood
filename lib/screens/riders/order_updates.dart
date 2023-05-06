@@ -1,16 +1,7 @@
-import 'dart:async';
-
-import 'package:another_stepper/dto/stepper_data.dart';
-import 'package:another_stepper/widgets/another_stepper.dart';
 import 'package:ashfood/utils/exports.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../models/order.dart';
-import '../../utils/services.dart';
-
+// A page for the rider to update the status of the order and get the location of the user and the vendor on the map
+// ignore: must_be_immutable
 class OrderUpdates extends StatefulWidget {
   final String orderId;
   Position position;
@@ -29,51 +20,38 @@ class _OrderUpdatesState extends State<OrderUpdates> {
   void initState() {
     super.initState();
     getOrder();
-    // getCurrentLocation();
     if (mounted) {
       positionStream();
-    }else{
+    } else {
       positionStream().cancel();
     }
   }
 
   List<LatLng> polylineCoordinates = [];
   List<LatLng> polylineCurrentLocation = [];
-  // Rx<Position>? currentLocation;
 
   final LocationSettings locationSettings = const LocationSettings(
     accuracy: LocationAccuracy.high,
     distanceFilter: 2,
   );
 
-  // void getCurrentLocation() async {
-  //   currentLocation = await Geolocator.getCurrentPosition().then((location) {
-  //     setState(() {
-  //       currentLocation = location;
-  //     });
-
-  //     print('init: $currentLocation');
-
-  //   });
-  // }
-
+// A stream to get the current location of the rider
   StreamSubscription<Position> positionStream() =>
       Geolocator.getPositionStream(locationSettings: locationSettings).listen(
         (Position? newPosition) {
           if (newPosition != null) {
             widget.position = newPosition;
-
             setState(() {});
-            print('stream: ${widget.position}');
           }
         },
       );
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     positionStream().cancel();
   }
 
+// A function to get the polyline points between the user and the vendor location and the current location of the rider and the vendor location
   void getPolyPoints() async {
     PolylinePoints polylinePoints = PolylinePoints();
     // if (order != null) {
@@ -89,27 +67,20 @@ class _OrderUpdatesState extends State<OrderUpdates> {
       PointLatLng(order!.menu!.vendor!.lat!, order!.menu!.vendor!.long!),
     );
     if (result.points.isNotEmpty) {
-      print('adding');
-      result.points.forEach((PointLatLng point) {
+      for (var point in result.points) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
+      }
       setState(() {});
-      //}
-    } else {
-      print('no points');
-    }
+    } else {}
     if (resultCurrentLocation.points.isNotEmpty) {
-      print('adding');
-      resultCurrentLocation.points.forEach((PointLatLng point) {
+      for (var point in resultCurrentLocation.points) {
         polylineCurrentLocation.add(LatLng(point.latitude, point.longitude));
-      });
+      }
       setState(() {});
-      //}
-    } else {
-      print('no points');
-    }
+    } else {}
   }
 
+// A function to get the order details from the database
   void getOrder() async {
     final docOrder = await FirebaseFirestore.instance
         .collection('orders')
@@ -118,15 +89,15 @@ class _OrderUpdatesState extends State<OrderUpdates> {
     if (docOrder.exists && docOrder.data() != null) {
       setState(() {
         order = UserOrder.fromJson(docOrder.data()!);
-        print('good order');
       });
       calculateActiveIndex();
       getPolyPoints();
     } else {
-      print('no order');
+
     }
   }
 
+// A function to calculate the active index of the stepper. The active index is the current status of the order
   void calculateActiveIndex() {
     if (order != null) {
       switch (order!.riderStatus) {
@@ -145,9 +116,9 @@ class _OrderUpdatesState extends State<OrderUpdates> {
     } else {
       activeIndex = 0;
     }
-    print('activeIndex: $activeIndex');
   }
 
+// A stepper widget to show the status of the order
   List<StepperData> buildStepper() {
     List<StepperData> stepperData = [
       StepperData(
@@ -215,7 +186,7 @@ class _OrderUpdatesState extends State<OrderUpdates> {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: activeIndex! >= 3 ? Constants.appBarColor : Colors.grey,
-            borderRadius: BorderRadius.all(
+            borderRadius: const BorderRadius.all(
               Radius.circular(30),
             ),
           ),
@@ -249,186 +220,179 @@ class _OrderUpdatesState extends State<OrderUpdates> {
                       padding: const EdgeInsets.only(
                         top: 10,
                       ),
-                      child: Container(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              width: Constants.size.width * 0.55,
-                              child: AnotherStepper(
-                                stepperList: buildStepper(),
-                                stepperDirection: Axis.vertical,
-                                iconWidth: 40,
-                                iconHeight: 40,
-                                activeBarColor: Constants.appBarColor,
-                                inActiveBarColor: Colors.grey,
-                                inverted: false,
-                                verticalGap: 30,
-                                activeIndex: activeIndex!,
-                                barThickness: 8,
-                              ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // The stepper widget to show the status of the order
+                          SizedBox(
+                            width: Constants.size.width * 0.55,
+                            child: AnotherStepper(
+                              stepperList: buildStepper(),
+                              stepperDirection: Axis.vertical,
+                              iconWidth: 40,
+                              iconHeight: 40,
+                              activeBarColor: Constants.appBarColor,
+                              inActiveBarColor: Colors.grey,
+                              inverted: false,
+                              verticalGap: 30,
+                              activeIndex: activeIndex!,
+                              barThickness: 8,
                             ),
-                            Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    // Services().sendNotification(title: order!.menu!.name!, message: 'The rider is on his way', token: order!.user!.fcmToken!);
-                                    if (activeIndex! < 1) {
-                                      setState(() {
-                                        activeIndex = 1;
-                                      });
-                                      FirebaseFirestore.instance
-                                          .collection('orders')
-                                          .doc(order!.id)
-                                          .update(
-                                        {'riderStatus': 1},
-                                      );
-                                      if (order!.user!.fcmToken != null &&
-                                          order!.user!.fcmToken!.isNotEmpty) {
-                                        Services().sendNotification(
-                                            token: order!.user!.fcmToken!,
-                                            content:
-                                                'The rider is on his way to deliver your food',
-                                            heading: order!.menu!.name!);
-                                      }
+                          ),
+                          Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  if (activeIndex! < 1) {
+                                    setState(() {
+                                      activeIndex = 1;
+                                    });
+                                    FirebaseFirestore.instance
+                                        .collection('orders')
+                                        .doc(order!.id)
+                                        .update(
+                                      {'riderStatus': 1},
+                                    );
+                                    if (order!.user!.fcmToken != null &&
+                                        order!.user!.fcmToken!.isNotEmpty) {
+                                      Services().sendNotification(
+                                          token: order!.user!.fcmToken!,
+                                          content:
+                                              'The rider is on his way to deliver your food',
+                                          heading: order!.menu!.name!);
                                     }
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.only(top: 30),
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: Constants.appBarColor,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      activeIndex! >= 1
-                                          ? 'Confirmed'
-                                          : 'Confirm',
-                                      style: TextStyles.button,
-                                    ),
+                                  }
+                                },
+                                // A button to confirm the rider has dispatched
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 30),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Constants.appBarColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    activeIndex! >= 1
+                                        ? 'Confirmed'
+                                        : 'Confirm',
+                                    style: TextStyles.button,
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    if (activeIndex! < 2) {
-                                      setState(() {
-                                        activeIndex = 2;
-                                      });
-                                      FirebaseFirestore.instance
-                                          .collection('orders')
-                                          .doc(order!.id)
-                                          .update(
-                                        {'riderStatus': 2},
-                                      );
-                                      if (order!.user!.fcmToken != null &&
-                                          order!.user!.fcmToken!.isNotEmpty) {
-                                        Services().sendNotification(
-                                            token: order!.user!.fcmToken!,
-                                            content:
-                                                'The rider has arrived at your location',
-                                            heading: order!.menu!.name!);
-                                      }
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  if (activeIndex! < 2) {
+                                    setState(() {
+                                      activeIndex = 2;
+                                    });
+                                    FirebaseFirestore.instance
+                                        .collection('orders')
+                                        .doc(order!.id)
+                                        .update(
+                                      {'riderStatus': 2},
+                                    );
+                                    if (order!.user!.fcmToken != null &&
+                                        order!.user!.fcmToken!.isNotEmpty) {
+                                      Services().sendNotification(
+                                          token: order!.user!.fcmToken!,
+                                          content:
+                                              'The rider has arrived at your location',
+                                          heading: order!.menu!.name!);
                                     }
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.only(top: 60),
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: activeIndex! >= 1
-                                          ? Constants.appBarColor
-                                          : Constants.appBarColor
-                                              .withOpacity(0.5),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      activeIndex! >= 2
-                                          ? 'Confirmed'
-                                          : 'Confirm',
-                                      style: TextStyles.button,
-                                    ),
+                                  }
+                                },
+                                // A button to confirm the rider has arrived
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 60),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: activeIndex! >= 1
+                                        ? Constants.appBarColor
+                                        : Constants.appBarColor
+                                            .withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    activeIndex! >= 2
+                                        ? 'Confirmed'
+                                        : 'Confirm',
+                                    style: TextStyles.button,
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    if (activeIndex! < 3) {
-                                      setState(() {
-                                        activeIndex = 3;
-                                      });
-                                      FirebaseFirestore.instance
-                                          .collection('orders')
-                                          .doc(order!.id)
-                                          .update(
-                                        {
-                                          'riderStatus': 3,
-                                          'status': 'completed'
-                                        },
-                                      );
-                                      FirebaseFirestore.instance
-                                          .collection('users')
-                                          .doc(order!.riderId)
-                                          .update({
-                                        "numOfOrders":
-                                            order!.rider!.numOfOrders! - 1,
-                                      });
-                                      if (order!.user!.fcmToken != null &&
-                                          order!.user!.fcmToken!.isNotEmpty) {
-                                        Services().sendNotification(
-                                            token: order!.user!.fcmToken!,
-                                            content:
-                                                'Your order has been delivered. Thank you for using our service. Please rate the rider',
-                                            heading: order!.menu!.name!);
-                                      }
-                                      if (order!.menu!.vendor!.fcmToken !=
-                                              null &&
-                                          order!.user!.fcmToken!.isNotEmpty) {
-                                        Services().sendNotification(
-                                            token: order!.user!.fcmToken!,
-                                            content:
-                                                'The rider has delivered the order to the customer',
-                                            heading:
-                                                "${order!.user!.name}: ${order!.menu!.name!}");
-                                      }
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  if (activeIndex! < 3) {
+                                    setState(() {
+                                      activeIndex = 3;
+                                    });
+                                    FirebaseFirestore.instance
+                                        .collection('orders')
+                                        .doc(order!.id)
+                                        .update(
+                                      {
+                                        'riderStatus': 3,
+                                        'status': 'completed'
+                                      },
+                                    );
+                                    FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(order!.riderId)
+                                        .update({
+                                      "numOfOrders":
+                                          order!.rider!.numOfOrders! - 1,
+                                    });
+                                    if (order!.user!.fcmToken != null &&
+                                        order!.user!.fcmToken!.isNotEmpty) {
+                                      Services().sendNotification(
+                                          token: order!.user!.fcmToken!,
+                                          content:
+                                              'Your order has been delivered. Thank you for using our service. Please rate the rider',
+                                          heading: order!.menu!.name!);
                                     }
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.only(top: 60),
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: activeIndex! >= 2
-                                          ? Constants.appBarColor
-                                          : Constants.appBarColor
-                                              .withOpacity(0.5),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Text(
-                                      activeIndex! >= 3
-                                          ? 'Confirmed'
-                                          : 'Confirm',
-                                      style: TextStyles.button,
-                                    ),
+                                    if (order!.menu!.vendor!.fcmToken !=
+                                            null &&
+                                        order!.user!.fcmToken!.isNotEmpty) {
+                                      Services().sendNotification(
+                                          token: order!.user!.fcmToken!,
+                                          content:
+                                              'The rider has delivered the order to the customer',
+                                          heading:
+                                              "${order!.user!.name}: ${order!.menu!.name!}");
+                                    }
+                                  }
+                                },
+                                // A button to confirm the rider has delivered
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 60),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: activeIndex! >= 2
+                                        ? Constants.appBarColor
+                                        : Constants.appBarColor
+                                            .withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    activeIndex! >= 3
+                                        ? 'Confirmed'
+                                        : 'Confirm',
+                                    style: TextStyles.button,
                                   ),
                                 ),
-                              ],
-                            )
-                          ],
-                        ),
+                              ),
+                            ],
+                          )
+                        ],
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Container(
+                    SizedBox(
                       width: Constants.size.width,
                       height: Constants.size.height * 0.4,
-                      child:
-                          // currentLocation == null
-                          //     ? Center(
-                          //         child: Text(
-                          //           'Loading Map...',
-                          //           style: TextStyles.bodyBlack,
-                          //         ),
-                          //       )
-                          //     :
-                          GoogleMap(
+                      // A map to show the location of the pickup and delivery
+                      child: GoogleMap(
                         myLocationEnabled: true,
                         initialCameraPosition: CameraPosition(
                           target: LatLng(
@@ -439,7 +403,7 @@ class _OrderUpdatesState extends State<OrderUpdates> {
                         ),
                         markers: {
                           Marker(
-                            markerId: MarkerId('pickup'),
+                            markerId: const MarkerId('pickup'),
                             position: LatLng(
                               order!.menu!.vendor!.lat!,
                               order!.menu!.vendor!.long!,
@@ -449,8 +413,8 @@ class _OrderUpdatesState extends State<OrderUpdates> {
                                 snippet: 'Pickup Location'),
                           ),
                           Marker(
-                            markerId: MarkerId('destination'),
-                            position: LatLng(
+                            markerId: const MarkerId('destination'),
+                            position: const LatLng(
                               5.76172812553667,
                               -0.2200464159250259,
                             ),
@@ -461,21 +425,17 @@ class _OrderUpdatesState extends State<OrderUpdates> {
                         },
                         polylines: {
                           Polyline(
-                            polylineId: PolylineId('route'),
+                            polylineId: const PolylineId('route'),
                             points: polylineCoordinates,
                             color: Constants.appBarColor,
                             width: 5,
                           ),
                           Polyline(
-                            polylineId: PolylineId('currentRoute'),
+                            polylineId: const PolylineId('currentRoute'),
                             points: polylineCurrentLocation,
-                            color: Color.fromARGB(255, 63, 145, 131),
+                            color: const Color.fromARGB(255, 63, 145, 131),
                             width: 5,
                           ),
-                        },
-                        onTap: (position) {
-                          print(position.latitude);
-                          print(position.longitude);
                         },
                       ),
                     ),

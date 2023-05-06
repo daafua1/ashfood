@@ -1,15 +1,6 @@
-import 'dart:developer';
-import 'dart:io';
-
-import 'package:ashfood/models/order.dart';
-import 'package:ashfood/widgets/containers.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../../utils/exports.dart';
-import '../../utils/services.dart';
-import '../../widgets/drawer.dart';
 
-// A page to show the feed of posts
+// A screen that displays the homepage of the rider
 class RiderHomepage extends StatefulWidget {
   const RiderHomepage({super.key});
 
@@ -18,8 +9,8 @@ class RiderHomepage extends StatefulWidget {
 }
 
 class _RiderHomepageState extends State<RiderHomepage> {
-  List<QueryDocumentSnapshot<Map<String,dynamic>>> orders = [];
-   List<Map<String,dynamic>> ordersNew = [];
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> orders = [];
+  List<Map<String, dynamic>> ordersNew = [];
 
   @override
   void initState() {
@@ -43,7 +34,7 @@ class _RiderHomepageState extends State<RiderHomepage> {
           borderRadius: BorderRadius.zero,
         ),
         title: const Text(
-         'Upcoming Deliveries',
+          'Upcoming Deliveries',
           style: TextStyles.title,
         ),
         leading: Builder(
@@ -59,39 +50,38 @@ class _RiderHomepageState extends State<RiderHomepage> {
           ),
         ),
       ),
-      // A stream builder to show the posts in real time
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-           
+            // A stream builder to show the list of upcoming rides of the rider.
+            // The list is sorted by the vendor name
             Expanded(
               child: StreamBuilder(
                   stream: Services().getRiderOrders(user.value.id!),
                   builder: (_, snapshot) {
                     if (snapshot.hasData) {
-                      
                       orders = snapshot.data!.docs;
-                       orders.forEach((element) async{ 
-                        final orderDoc =element.data() ;
-                        if(ordersNew.any((element1) => element1['vendorId'] == orderDoc['vendorId'])){
-                         
-                        }else{
-                           ordersNew.add(orderDoc);
+                      for (var element in orders) {
+                        final orderDoc = element.data();
+                        if (ordersNew.any((element1) =>
+                            element1['vendorId'] == orderDoc['vendorId'])) {
+                        } else {
+                          ordersNew.add(orderDoc);
                         }
-                      });
-                    log (ordersNew.length.toString());
+                      }
                     }
                     if (orders.isNotEmpty) {
                       return ListView.builder(
-                        itemCount:ordersNew.length,
+                        itemCount: ordersNew.length,
                         itemBuilder: (_, index) {
-                          final order =
-                              UserOrder.fromJson(ordersNew[index]);
+                          final order = UserOrder.fromJson(ordersNew[index]);
                           return Padding(
                             padding: const EdgeInsets.only(top: 10),
-                            child: VendorContainer(vendor: order.menu!.vendor!,forRiders: true ),
+                            child: VendorContainer(
+                                vendor: order.menu!.vendor!, forRiders: true),
                           );
                         },
                       );
@@ -104,12 +94,9 @@ class _RiderHomepageState extends State<RiderHomepage> {
         ),
       ),
       // The drawer at the homepage
-      drawer: VendorDrawer(
+      drawer: AppDrawer(
         userType: user.value.userType!,
       ),
     );
   }
-
-
- 
 }

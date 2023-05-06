@@ -1,11 +1,6 @@
-import 'package:ashfood/controllers/auth_controller.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
 import '../../utils/exports.dart';
-import '../../utils/services.dart';
 
-// A page to login by email and student id
+// A page to login by email and password. Or phone number and password if the user is a rider
 class LoginScreen extends StatefulWidget {
   final UserType usrType;
   const LoginScreen({super.key, required this.usrType});
@@ -15,13 +10,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // The controllers for the password text fields
+  // The controller for the password text fields
   TextEditingController password = TextEditingController();
 
-  // The controllers for the email text fields
+  // The controller for the email text fields
   TextEditingController email = TextEditingController();
 
-  // The controllers for the phone text fields
+  // The controller for the phone text fields
   TextEditingController phone = TextEditingController();
 
   // Whether the user inputs are valid
@@ -31,8 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
 
   final controller = Get.put(AuthController());
-
- 
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyles.title,
                 ),
               ),
-              // The email text field
+              // The email text field if the user is a student or vendor and the phone number text field if the user is a rider
               Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
@@ -77,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   errorText: "Phone number is required".tr),
                               FormBuilderValidators.minLength(10,
                                   errorText: "Phone number is invalid".tr),
-                                  FormBuilderValidators.numeric(
+                              FormBuilderValidators.numeric(
                                   errorText: "Phone number is invalid".tr),
                             ],
                           ],
@@ -94,13 +87,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   errorText: "Eamil is required".tr),
                               FormBuilderValidators.email(
                                   errorText: "Email is not valid".tr),
-                              
                             ],
                           ],
                         ),
                       ),
               ),
-              // The student id text field
+              // The password text field
               FormWidget(
                 isPassword: true,
                 obscureText: true,
@@ -188,6 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // Validates the phone number
   bool verifyPhone() {
     if (widget.usrType != UserType.rider) {
       return true;
@@ -202,6 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+// Validates the email
   bool verifyEmail() {
     if (widget.usrType == UserType.rider) {
       return true;
@@ -245,7 +239,6 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoading = false;
         });
         // Show an error message if the user is not found
-        print(e.toString());
         Fluttertoast.showToast(
           msg: e.toString(),
           backgroundColor: Colors.white,

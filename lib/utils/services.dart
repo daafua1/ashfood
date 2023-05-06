@@ -1,19 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/get_utils/src/platform/platform_io.dart';
-import 'package:http/http.dart' as http;
-import 'package:onesignal_flutter/onesignal_flutter.dart';
-
-import '../main.dart';
-import '../models/app_user.dart';
-import 'constants.dart';
-
 // This class is used to handle operations on the database
+
+import 'exports.dart';
+
 class Services {
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -59,7 +47,7 @@ class Services {
     return await storageReference.getDownloadURL();
   }
 
-// This function is used to get stream snapshots of all the posts in the database
+// This function is used to get stream snapshots of the menus collection
   Stream<QuerySnapshot<Map<String, dynamic>>> getMenus(String vendorId) {
     return FirebaseFirestore.instance
         .collection('menus')
@@ -67,6 +55,7 @@ class Services {
         .snapshots();
   }
 
+// This function is used to get stream snapshots of the vendors  
   Stream<QuerySnapshot<Map<String, dynamic>>> getVendors() {
     return FirebaseFirestore.instance
         .collection('users')
@@ -74,6 +63,7 @@ class Services {
         .snapshots();
   }
 
+// This function is used to get stream snapshots of the cart collection for a specific user
   Stream<QuerySnapshot<Map<String, dynamic>>> getCart() {
     return FirebaseFirestore.instance
         .collection('cart')
@@ -81,6 +71,7 @@ class Services {
         .snapshots();
   }
 
+// This function is used to get stream snapshots of the orders collection for a specific user
   Stream<QuerySnapshot<Map<String, dynamic>>> getOrders(String userId) {
     return FirebaseFirestore.instance
         .collection('orders')
@@ -89,6 +80,7 @@ class Services {
         .snapshots();
   }
 
+// This function is used to get stream snapshots of orders for a specific vendor
   Stream<QuerySnapshot<Map<String, dynamic>>> getOrdersVendros(
       String vendorId) {
     return FirebaseFirestore.instance
@@ -101,6 +93,7 @@ class Services {
         .snapshots();
   }
 
+// This function is used to get stream snapshots of past orders for a specific rider
   Stream<QuerySnapshot<Map<String, dynamic>>> getPastOrdersRiders(
       String userId) {
     return FirebaseFirestore.instance
@@ -109,6 +102,7 @@ class Services {
         .where('riderId', isEqualTo: userId)
         .snapshots();
   }
+  // This function is used to get stream snapshots of past orders for a specific vendor
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getPastOrdersVendors(
       String userId) {
@@ -119,6 +113,7 @@ class Services {
         .snapshots();
   }
 
+// This function is used to get stream snapshots of past orders for a specific student 
   Stream<QuerySnapshot<Map<String, dynamic>>> getPastOrdersStudents(
       String userId) {
     return FirebaseFirestore.instance
@@ -128,6 +123,7 @@ class Services {
         .snapshots();
   }
 
+// This function is used to get stream snapshots of the orders collection for a specific rider
   Stream<QuerySnapshot<Map<String, dynamic>>> getRiderOrders(String userId) {
     return FirebaseFirestore.instance
         .collection('orders')
@@ -136,6 +132,7 @@ class Services {
         .snapshots();
   }
 
+// This function is used to get stream snapshots of the orders collection for a specific vendor
   Stream<QuerySnapshot<Map<String, dynamic>>> getRiderVendor(
       String userId, String vendorId) {
     return FirebaseFirestore.instance
@@ -146,41 +143,20 @@ class Services {
         .snapshots();
   }
 
+// This function is used to get and save user's device token 
   void registerNotification() async {
-    // firebaseMessaging.requestPermission();
-    // final doc = prefs!.getString('docs');
-
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   if (message.notification != null) {
-    //     showNotification(message.notification!);
-    //   }
-    //   return;
-    // });
     var deviceState = await OneSignal.shared.getDeviceState();
 
     if (deviceState == null || deviceState.userId == null) return;
 
     var playerId = deviceState.userId!;
-    print('playerId: $playerId');
     FirebaseFirestore.instance.collection('users').doc(user.value.id).update({
       'fcmToken': playerId,
     });
     user.value.fcmToken = playerId;
-
-    // firebaseMessaging.getToken().then((token) {
-    //   if (token != null && token != user.value.fcmToken) {
-    //     FirebaseFirestore.instance
-    //         .collection('users')
-    //         .doc(user.value.id)
-    //         .update({
-    //       'fcmToken': token,
-    //     });
-    //   }
-    // }).catchError((err) {
-    //   // Fluttertoast.showToast(msg: err.message.toString());
-    //});
   }
 
+// This function is used to configure local notifications
   void configLocalNotification() {
     AndroidInitializationSettings initializationSettingsAndroid =
         const AndroidInitializationSettings('app_icon');
@@ -191,6 +167,7 @@ class Services {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
+// This function is used to show a notification
   void showNotification(RemoteNotification remoteNotification) async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -217,6 +194,7 @@ class Services {
     );
   }
 
+// This function is used to get a list of riders
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getRiders() async {
     final query = FirebaseFirestore.instance
         .collection('users')
@@ -251,6 +229,7 @@ class Services {
   //   print(request.reasonPhrase);
   // }
 
+// This function is used to send notifications to the user
   void sendNotification(
       {required String token,
       required String content,
@@ -259,14 +238,9 @@ class Services {
       playerIds: [token],
       content: content,
       heading: heading,
-      // iosAttachments: {"id1": imgUrlString},
       bigPicture: 'assets/images/logo.png',
-      // buttons: [
-      //   OSActionButton(text: "test1", id: "id1"),
-      //   OSActionButton(text: "test2", id: "id2")
-      // ]
     );
 
-    var response = await OneSignal.shared.postNotification(notification);
+   await OneSignal.shared.postNotification(notification);
   }
 }

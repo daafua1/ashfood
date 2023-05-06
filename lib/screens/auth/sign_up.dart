@@ -1,13 +1,6 @@
-import 'dart:io';
-
-import 'package:ashfood/utils/file_manager.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-import '../../controllers/auth_controller.dart';
 import '../../utils/exports.dart';
-import '../select_location.dart';
 
-// A page to login by email and student id
+// A page for the user to sign up
 class SignUp extends StatefulWidget {
   final UserType userType;
   const SignUp({super.key, required this.userType});
@@ -29,6 +22,7 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Constants.appBarColor,
+      // The app bar
       appBar: AppBar(
         backgroundColor: Constants.appBarColor,
         elevation: 0,
@@ -82,6 +76,7 @@ class _SignUpState extends State<SignUp> {
                   ],
                 ),
               ),
+              // An error message if the user does not select a profile image. Only shown if the user is a rider or a vendor
               Obx(
                 () => AnimatedCrossFade(
                   crossFadeState:
@@ -97,13 +92,6 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
 
-              // const Align(
-              //   alignment: Alignment.centerLeft,
-              //   child: Text(
-              //     "Register",
-              //     style: TextStyles.title,
-              //   ),
-              // ),
               // The name text field
               Padding(
                 padding: const EdgeInsets.only(top: 16),
@@ -125,7 +113,9 @@ class _SignUpState extends State<SignUp> {
               ),
               // The email text field
               widget.userType == UserType.rider
-                  ? SizedBox(height: 16,)
+                  ? const SizedBox(
+                      height: 16,
+                    )
                   : Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 16, horizontal: 0),
@@ -152,6 +142,8 @@ class _SignUpState extends State<SignUp> {
                 () => FormWidget(
                   controller: controller.password.value,
                   lableText: "Password",
+                  obscureText: true,
+                  isPassword: true,
                   validator: FormBuilderValidators.compose(
                     [
                       if (controller.validationError.value) ...[
@@ -165,6 +157,7 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               const SizedBox(height: 16),
+              // The phone number text field
               Obx(
                 () => FormWidget(
                   controller: controller.phone.value,
@@ -183,6 +176,7 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
 
+              // The location text field. Only shown if the user is a vendor
               widget.userType == UserType.vendor
                   ? Padding(
                       padding: const EdgeInsets.only(top: 16.0),
@@ -216,7 +210,7 @@ class _SignUpState extends State<SignUp> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    // The login button
+                    // The sign up button
                     Expanded(
                       flex: 1,
                       child: Obx(
@@ -252,7 +246,7 @@ class _SignUpState extends State<SignUp> {
                     const SizedBox(
                       width: 16,
                     ),
-                    // The sign up button that takes the user to the sign up page
+                    // The login button that takes the user to the login page
                     Expanded(
                       flex: 1,
                       child: MaterialButton(

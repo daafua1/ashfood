@@ -1,10 +1,6 @@
 import 'package:ashfood/utils/exports.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../models/order.dart';
-import '../../utils/services.dart';
-import '../../widgets/containers.dart';
-
+// A screen that displays the past orders of the rider
 class PastOrdersRider extends StatefulWidget {
   const PastOrdersRider({super.key});
 
@@ -17,6 +13,7 @@ class _PastOrdersRiderState extends State<PastOrdersRider> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        // App bar
         appBar: Constants.appBar(
           'Past Orders',
           false,
@@ -24,6 +21,7 @@ class _PastOrdersRiderState extends State<PastOrdersRider> {
         body: _buildOrderList());
   }
 
+// A method that builds the list of past orders
   Widget _buildOrderList() {
     return StreamBuilder(
       stream: Services().getPastOrdersRiders(user.value.id!),
@@ -36,6 +34,7 @@ class _PastOrdersRiderState extends State<PastOrdersRider> {
           });
 
           if (orders.isNotEmpty) {
+            // A list of past orders
             return ListView.builder(
               itemCount: orders.length,
               itemBuilder: (context, index) {

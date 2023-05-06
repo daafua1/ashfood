@@ -1,16 +1,6 @@
-import 'package:ashfood/models/cart_item.dart';
-import 'package:ashfood/screens/select_location.dart';
 import 'package:ashfood/utils/exports.dart';
-import 'package:ashfood/utils/utilities.dart';
-import 'package:ashfood/widgets/containers.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pay_with_paystack/pay_with_paystack.dart';
 
-import '../../models/app_user.dart';
-import '../../models/order.dart';
-import '../../utils/services.dart';
-
+// A checkout page to display the list of items in the cart
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
 
@@ -43,6 +33,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   const SizedBox(
                     width: 20,
                   ),
+                  // A text widget to display the user's location
                   Expanded(
                     child: Text(
                       user.value.location != null &&
@@ -56,6 +47,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
           ),
+          // A widget to display the list of items in the cart
           Expanded(child: _buildCartList()),
         ],
       ),
@@ -65,6 +57,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
+  // A method to build the list of items in the cart
   Widget _buildCartList() {
     return StreamBuilder(
         stream: Services().getCart(),
@@ -95,6 +88,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         });
   }
 
+// The floating buttons to display the total price of items in the cart and the checkout button
   floatingButtons() {
     return cart.isNotEmpty
         ? Container(
@@ -121,9 +115,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       child: GestureDetector(
                         onTap: () {
                           if (
-                               Utilities.shouldOrder() &&
-                              user.value.location != null &&
+                              // check if the user has added a location and the order time is valid
+                              Utilities.shouldOrder() &&
+                                  user.value.location != null &&
                                   user.value.location!.isNotEmpty) {
+                            // make payment through paystack
                             PayWithPayStack().now(
                                 context: context,
                                 secretKey:
@@ -182,6 +178,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                     ),
                     const SizedBox(width: 20),
+                    // A text widget to display the total price of items in the cart
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
@@ -203,6 +200,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         : const SizedBox.shrink();
   }
 
+// A method to calculate the total price of items in the cart
   String calculatePrice() {
     num price = 0;
     for (var element in cart) {
@@ -212,23 +210,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return price.toInt().toString();
   }
 
+// A method to place an order
   void placeOrder() async {
     setState(() {
       isLoading = true;
     });
 
     final riders = await Services().getRiders();
-    print(riders.toString());
 
     AppUser? rider;
 
+    // loop through the items in the cart and place an order for each item
     for (int i = 0; i < cart.length; i++) {
       if (riders.isNotEmpty) {
         rider = AppUser.fromJson(riders[0].data());
-        // if (riderToBe.numOfRiders != 5 && riderToBe.isAvailable != false) {
-        //   rider = riderToBe;
-        //   break;
-        // }
       }
       final docReference = FirebaseFirestore.instance
           .collection('orders')
@@ -248,15 +243,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
         vendorId: cartItem.menu!.vendorId,
       );
 
+      // save the order to the database
       FirebaseFirestore.instance.runTransaction(
         (transaction) async => transaction.set(
           docReference,
           order.toJson(),
         ),
       );
+      // update the number of orders for the rider
       FirebaseFirestore.instance.collection('users').doc(rider!.id!).update({
         'numOfOrders': rider.numOfOrders! + 1,
       });
+      // send notifications to the vendor, user and rider
       if (order.menu!.vendor!.fcmToken != null) {
         Services().sendNotification(
             token: order.menu!.vendor!.fcmToken!,
@@ -278,7 +276,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         );
       }
     }
-
+    // delete the items in the cart
     for (var element in cart) {
       FirebaseFirestore.instance.collection('cart').doc(element.id).delete();
     }
@@ -286,6 +284,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     setState(() {
       isLoading = false;
     });
+    // show a toast to indicate that the order has been placed
     Fluttertoast.showToast(
       msg: 'Orders Placed successfully',
       toastLength: Toast.LENGTH_LONG,

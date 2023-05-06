@@ -1,9 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-import '../../models/order.dart';
 import '../../utils/exports.dart';
 
+// A page to file a complaint
 class Complain extends StatefulWidget {
   final UserOrder order;
   const Complain({
@@ -16,14 +13,15 @@ class Complain extends StatefulWidget {
 }
 
 class _ComplainState extends State<Complain> {
-  var aboutMeNotifier = ValueNotifier<String>('');
+  var textNotifier = ValueNotifier<String>('');
   final textController = TextEditingController();
 
-  var aboutMeLength = 0.obs;
+  var textLength = 0.obs;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // The appbar
       appBar: Constants.appBar('File a Complaint', false),
       backgroundColor: Colors.white,
       body: Padding(
@@ -34,18 +32,22 @@ class _ComplainState extends State<Complain> {
             children: [
               Padding(
                 padding: EdgeInsets.only(
-                    top: Constants.size.height * 0.0591,),
+                  top: Constants.size.height * 0.0591,
+                ),
                 child: Text(
                   "Let us know what went wrong!".tr,
                   style: TextStyles.buttonBlack,
                 ),
               ),
-               SizedBox(height:10),
-              Text('OrderID: ${widget.order.id}',style:TextStyles.bodyBlack),
-              SizedBox(height:20),
+              const SizedBox(height: 10),
+              // The id of the order to be complained about
+              Text('OrderID: ${widget.order.id}', style: TextStyles.bodyBlack),
+              const SizedBox(height: 20),
+              // The textfield to type the complaint
               Padding(
                 padding: EdgeInsets.only(
-                    top: Constants.size.height * 0.05,),
+                  top: Constants.size.height * 0.05,
+                ),
                 child: Container(
                     //padding:const  EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -56,8 +58,8 @@ class _ComplainState extends State<Complain> {
                       cursorColor: Colors.black87,
                       controller: textController,
                       onChanged: (value) {
-                        aboutMeNotifier.value = value;
-                        aboutMeLength.value = value.length;
+                        textNotifier.value = value;
+                        textLength.value = value.length;
                       },
                       maxLines: null,
                       decoration: const InputDecoration(
@@ -72,8 +74,9 @@ class _ComplainState extends State<Complain> {
                       ),
                     )),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+
+              const Text(
                 'minimum of 50 characters',
                 style: TextStyle(
                     fontStyle: FontStyle.italic,
@@ -85,48 +88,39 @@ class _ComplainState extends State<Complain> {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterFloat,
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          // The submit button
           Obx(() => GestureDetector(
-               onTap: () {
-                
-                  if (aboutMeNotifier.value.length > 50) {
-                   
-                    FirebaseFirestore.instance
-                        .collection('complaints').add({
-                          'order':widget.order.id,
-                          'description':aboutMeNotifier.value
-                        });
-                        Fluttertoast.showToast(msg: 'Complaint submitted');
-                        Get.back();
-                        
-                  }},
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: aboutMeLength.value < 50 ?
-                         Constants.appBarColor.withOpacity(0.5):Constants.appBarColor
-                      ),
-                      child: Center(child: Text('Submit', style: TextStyles.button,)),
-                    ),
-                  )
-              //  CustomButton(
-              //   width: double.infinity,
-              //   variant: aboutMeLength.value < 50
-              //       ? ButtonVariant.InActiveGrey
-              //       : ButtonVariant.FillRed400,
-              //   text: "Finish".tr,
-              //   alignment: Alignment.center,
-             
-              //     Get.close(2);
-              //     Get.to(() => EditProfile());
-              //   },
-              // ),
-             ),
+                onTap: () {
+                  // Validate the text length and submit the complaint
+                  if (textNotifier.value.length > 50) {
+                    FirebaseFirestore.instance.collection('complaints').add({
+                      'order': widget.order.id,
+                      'description': textNotifier.value
+                    });
+                    Fluttertoast.showToast(msg: 'Complaint submitted');
+                    Get.back();
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: textLength.value < 50
+                          ? Constants.appBarColor.withOpacity(0.5)
+                          : Constants.appBarColor),
+                  child: const Center(
+                      child: Text(
+                    'Submit',
+                    style: TextStyles.button,
+                  )),
+                ),
+              )),
         ],
       ),
     );

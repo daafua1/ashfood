@@ -1,10 +1,6 @@
 import 'package:ashfood/utils/exports.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../models/order.dart';
-import '../../utils/services.dart';
-import '../../widgets/containers.dart';
-
+// A page to display past orders for students
 class PastOrdersStudents extends StatefulWidget {
   const PastOrdersStudents({super.key});
 
@@ -24,6 +20,7 @@ class _PastOrdersStudentsState extends State<PastOrdersStudents> {
         body: _buildOrderList());
   }
 
+// A method to build the list of orders
   Widget _buildOrderList() {
     return StreamBuilder(
       stream: Services().getPastOrdersStudents(user.value.id!),

@@ -1,12 +1,6 @@
-import 'package:ashfood/widgets/pagination.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-import '../../models/menu.dart';
-import '../../models/cart_item.dart';
 import '../../utils/exports.dart';
 
+// A page to display the details of a menu
 class MenuDetails extends StatefulWidget {
   final Menu menu;
   const MenuDetails({super.key, required this.menu});
@@ -21,7 +15,7 @@ class _MenuDetailsState extends State<MenuDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: Constants.appBar("Menu Details",true),
+        appBar: Constants.appBar("Menu Details", true),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -33,6 +27,7 @@ class _MenuDetailsState extends State<MenuDetails> {
                   widget.menu.name!,
                   style: TextStyles.titleBlack,
                 ),
+                // a carousel slider to display the menu images
                 CarouselSlider(
                   items:
                       widget.menu.media!.map((e) => Image.network(e)).toList(),
@@ -44,7 +39,8 @@ class _MenuDetailsState extends State<MenuDetails> {
                     initialPage: 0,
                     //enableInfiniteScroll: true,
                     reverse: false,
-                    autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                    autoPlayAnimationDuration:
+                        const Duration(milliseconds: 800),
                     autoPlayCurve: Curves.fastOutSlowIn,
                     enlargeCenterPage: true,
                     onPageChanged: (index, reason) {
@@ -63,6 +59,7 @@ class _MenuDetailsState extends State<MenuDetails> {
                 Row(
                   children: [
                     const Spacer(),
+                    // a container to display the price of the menu
                     Container(
                       decoration: BoxDecoration(
                         color: Constants.appBarColor,
@@ -85,8 +82,10 @@ class _MenuDetailsState extends State<MenuDetails> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
+                          // add the menu to cart
                           addToCart();
                         },
+                        // a container to display the add to cart button
                         child: Container(
                           margin: const EdgeInsets.only(right: 20),
                           decoration: BoxDecoration(
@@ -110,6 +109,7 @@ class _MenuDetailsState extends State<MenuDetails> {
                               }
                             });
                           },
+                          // a remove button to reduce the quantity of the menu to be added to cart by 1
                           child: Container(
                             decoration: BoxDecoration(
                               color: quantity == 1
@@ -134,6 +134,7 @@ class _MenuDetailsState extends State<MenuDetails> {
                               quantity++;
                             });
                           },
+                          // an add button to increase the quantity of the menu to be added to cart by 1
                           child: Container(
                             decoration: BoxDecoration(
                               color: Constants.appBarColor,
@@ -155,6 +156,7 @@ class _MenuDetailsState extends State<MenuDetails> {
         ));
   }
 
+// a function to add the menu to cart
   addToCart() {
     final docReference = FirebaseFirestore.instance
         .collection('cart')

@@ -1,12 +1,6 @@
-import 'package:ashfood/screens/riders/complain.dart';
-import 'package:ashfood/screens/riders/order_updates.dart';
 import 'package:ashfood/utils/exports.dart';
-import 'package:ashfood/widgets/pagination.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:geolocator/geolocator.dart';
 
-import '../../models/order.dart';
-
+// A page for riders to view order details
 class OrderDetailsRiders extends StatefulWidget {
   final UserOrder order;
   const OrderDetailsRiders({
@@ -23,10 +17,10 @@ class _OrderDetailsRidersState extends State<OrderDetailsRiders> {
   bool gettingLocation = false;
   @override
   Widget build(BuildContext context) {
-     final createdAt =
-          DateTime.fromMillisecondsSinceEpoch(int.parse(widget.order.createdAt!));
-      final now = DateTime.now();
-      final difference = now.difference(createdAt).inMinutes;
+    final createdAt =
+        DateTime.fromMillisecondsSinceEpoch(int.parse(widget.order.createdAt!));
+    final now = DateTime.now();
+    final difference = now.difference(createdAt).inMinutes;
     return Scaffold(
       appBar: Constants.appBar('Order Details', false),
       body: gettingLocation
@@ -51,6 +45,7 @@ class _OrderDetailsRidersState extends State<OrderDetailsRiders> {
                       widget.order.menu!.name!,
                       style: TextStyles.titleBlack,
                     ),
+                    // The carousel slider to display the images of the menu
                     CarouselSlider(
                       items: widget.order.menu!.media!
                           .map((e) => Image.network(e))
@@ -61,7 +56,6 @@ class _OrderDetailsRidersState extends State<OrderDetailsRiders> {
                         disableCenter: true,
                         viewportFraction: 0.9,
                         initialPage: 0,
-                        //enableInfiniteScroll: true,
                         reverse: false,
                         autoPlayAnimationDuration:
                             const Duration(milliseconds: 800),
@@ -80,9 +74,11 @@ class _OrderDetailsRidersState extends State<OrderDetailsRiders> {
                       current: current,
                     ),
                     const SizedBox(height: 5),
+
                     Row(
                       children: [
                         const Spacer(),
+                        // A Container to display the price of the menu
                         Container(
                           decoration: BoxDecoration(
                             color: Constants.appBarColor,
@@ -95,72 +91,83 @@ class _OrderDetailsRidersState extends State<OrderDetailsRiders> {
                       ],
                     ),
                     const SizedBox(height: 20),
+                    // A text to display the description of the menu
                     const Text('Description', style: TextStyles.titleBlack),
                     const SizedBox(height: 10),
                     Text(widget.order.menu!.description!,
                         style: TextStyles.bodyBlack),
                     const SizedBox(height: 20),
-                    widget.order.status == 'completed' ? SizedBox.shrink():
-                    Padding(
-                      padding:  EdgeInsets.only(bottom: 20),
-                      child: GestureDetector(
-                        onTap: () async {
-                          final permistion = await Geolocator.checkPermission();
-                          if (widget.order.status == "completed") {
-                            return;
-                          }
-                          setState(() {
-                            gettingLocation = true;
-                          });
-                          if (permistion == LocationPermission.denied) {
-                            await Geolocator.requestPermission();
-                            setState(() {
-                              gettingLocation = false;
-                            });
-                          } else {
-                            await Geolocator.getCurrentPosition().then(
-                              (position) {
+                    widget.order.status == 'completed'
+                        ? const SizedBox.shrink()
+                        // View on map button to view the pickup and delivery locations on a map and to provide updates
+                        : Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: GestureDetector(
+                              onTap: () async {
+                                final permistion =
+                                    await Geolocator.checkPermission();
+                                if (widget.order.status == "completed") {
+                                  return;
+                                }
                                 setState(() {
-                                  gettingLocation = false;
+                                  gettingLocation = true;
                                 });
-                                Get.to(
-                                  () => OrderUpdates(
-                                    orderId: widget.order.id!,
-                                    position: position,
-                                  ),
-                                );
+                                if (permistion == LocationPermission.denied) {
+                                  await Geolocator.requestPermission();
+                                  setState(() {
+                                    gettingLocation = false;
+                                  });
+                                } else {
+                                  await Geolocator.getCurrentPosition().then(
+                                    (position) {
+                                      setState(() {
+                                        gettingLocation = false;
+                                      });
+                                      Get.to(
+                                        () => OrderUpdates(
+                                          orderId: widget.order.id!,
+                                          position: position,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                }
                               },
-                            );
-                          }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: widget.order.status == "completed"
-                                ? Constants.appBarColor.withOpacity(0.5)
-                                : Constants.appBarColor,
-                            borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: widget.order.status == "completed"
+                                      ? Constants.appBarColor.withOpacity(0.5)
+                                      : Constants.appBarColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 20),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Text('View on Map',
+                                        style: TextStyles.button),
+                                    SizedBox(width: 10),
+                                    Icon(
+                                      Icons.map,
+                                      size: 24,
+                                      color: Colors.white,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 20),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Text('View on Map', style: TextStyles.button),
-                              SizedBox(width: 10),
-                              Icon(
-                                Icons.map,
-                                size: 24,
-                                color: Colors.white,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    widget.order.status == 'completed' ? SizedBox.shrink():
-                    difference < 30 ? 
-                   Text('Pickup in ${30 - difference} minutes', style: TextStyles.bodyRed):Text('Ready for pickup', style: TextStyles.bodyRed),
+                    // A text to display the pickup time of the order
+                    widget.order.status == 'completed'
+                        ? const SizedBox.shrink()
+                        : difference < 30
+                            ? Text('Pickup in ${30 - difference} minutes',
+                                style: TextStyles.bodyRed)
+                            : const Text('Ready for pickup',
+                                style: TextStyles.bodyRed),
                     const SizedBox(height: 20),
+                    // A text to display the pickup information of the order.
                     const Text('Pick-Up Info', style: TextStyles.buttonBlack),
                     const SizedBox(height: 10),
                     Text(widget.order.menu!.vendor!.name!,
@@ -172,6 +179,7 @@ class _OrderDetailsRidersState extends State<OrderDetailsRiders> {
                     Text(widget.order.menu!.vendor!.location!,
                         style: TextStyles.bodyBlack),
                     const SizedBox(height: 20),
+                    // A text to display the delivery information of the order
                     const Text('Delivery Info', style: TextStyles.buttonBlack),
                     const SizedBox(height: 10),
                     Text(widget.order.user!.name!, style: TextStyles.bodyBlack),
@@ -182,24 +190,27 @@ class _OrderDetailsRidersState extends State<OrderDetailsRiders> {
                     Text(widget.order.user!.location!,
                         style: TextStyles.bodyBlack),
                     const SizedBox(height: 20),
+
                     widget.order.status == 'completed'
                         ? GestureDetector(
-                          onTap: () => Get.to(()=>Complain(order:widget.order)),
+                            onTap: () =>
+                                Get.to(() => Complain(order: widget.order)),
+                            // A button to file a complain about the order
                             child: Container(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Constants.appBarColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 20),
-                                child: Text('File a Complain',
-                                    style: TextStyles.button),
+                              decoration: BoxDecoration(
+                                color: Constants.appBarColor,
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 20),
+                              child: const Text('File a Complain',
+                                  style: TextStyles.button),
                             ),
                           )
                         : SizedBox.fromSize(),
-                    SizedBox(height: 30,),
+                    const SizedBox(
+                      height: 30,
+                    ),
                   ],
                 ),
               ),

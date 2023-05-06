@@ -1,14 +1,6 @@
-import 'dart:io';
-
-import 'package:ashfood/models/app_user.dart';
-import 'package:ashfood/widgets/cart_button.dart';
-import 'package:ashfood/widgets/containers.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../../utils/exports.dart';
-import '../../utils/services.dart';
-import '../../widgets/drawer.dart';
 
+// A page to display the available vendors for students
 class CustomerHomePage extends StatefulWidget {
   const CustomerHomePage({super.key});
 
@@ -58,7 +50,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
         ),
         actions: const [CartButton()],
       ),
-      // A stream builder to show the posts in real time
+      // A stream builder to show the list of vendors
       body: StreamBuilder(
           stream: Services().getVendors(),
           builder: (_, snapshot) {
@@ -75,7 +67,10 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                       AppUser.fromJson(snapshot.data!.docs[index].data());
                   return Padding(
                       padding: const EdgeInsets.only(top: 20),
-                      child: VendorContainer(vendor: vendor, forRiders: false,));
+                      child: VendorContainer(
+                        vendor: vendor,
+                        forRiders: false,
+                      ));
                 },
               );
             } else {
@@ -83,7 +78,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
             }
           }),
       // The drawer at the homepage
-      drawer: VendorDrawer(
+      drawer: AppDrawer(
         userType: user.value.userType!,
       ),
     );

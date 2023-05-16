@@ -100,15 +100,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                !Utilities.shouldOrder()
-                    ? Padding(
-                        padding: const EdgeInsets.only(bottom: 5.0),
-                        child: Text(
-                          Utilities.orderAt(),
-                          style: TextStyles.buttonBlack,
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+                // !Utilities.shouldOrder()
+                //     ? Padding(
+                //         padding: const EdgeInsets.only(bottom: 5.0),
+                //         child: Text(
+                //           Utilities.orderAt(),
+                //           style: TextStyles.buttonBlack,
+                //         ),
+                //       )
+                //     : const SizedBox.shrink(),
                 Row(
                   children: [
                     Expanded(
@@ -116,7 +116,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         onTap: () {
                           if (
                               // check if the user has added a location and the order time is valid
-                              Utilities.shouldOrder() &&
+                            //  Utilities.shouldOrder() &&
                                   user.value.location != null &&
                                   user.value.location!.isNotEmpty) {
                             // make payment through paystack

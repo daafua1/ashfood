@@ -39,7 +39,7 @@ class AuthController extends GetxController {
     // Check if the user inputs are valid
     if (vendorVallidation() &&
         riderValidation() &&
-        email.value.text.isEmail &&
+        customerValidation() &&
         password.value.text.isNotEmpty &&
         name.value.text.isNotEmpty &&
         phone.value.text.isNotEmpty &&
@@ -87,16 +87,17 @@ class AuthController extends GetxController {
         );
       }
     } else {
+      print('érror');
       validationError.value = true;
     }
   }
 
 // Performs vendor specific validations
   bool vendorVallidation() {
-    if (userType.value != UserType.vendor) {
+    if ( userType.value != UserType.vendor) {
       return true;
     } else {
-      if (location.value.text.isNotEmpty &&
+      if (email.value.text.isEmail &&location.value.text.isNotEmpty &&
           profileImage.value.isNotEmpty &&
           lat.value != 0.0 &&
           long.value != 0.0) {
@@ -113,6 +114,18 @@ class AuthController extends GetxController {
       return true;
     } else {
       if (profileImage.value.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  bool customerValidation() {
+    if (userType.value != UserType.customer) {
+      return true;
+    } else {
+      if (email.value.text.isEmail) {
         return true;
       } else {
         return false;

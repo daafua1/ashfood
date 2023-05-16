@@ -1,21 +1,29 @@
-# ashfood
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+GitHub Link: https://github.com/daafua1/ashfood
 
 
+How To Install the Application
+
+The application can be installed on both Android and iOS devices as well as emulators.
+One must ensure Flutter and Dart are well setup and the person is capable of running flutter applications.
+
+1. After cloning the application, one must run the following command in the terminal to get all the dependencies:
+    - flutter pub get
+2. One must then connect a mobile device or emulator. For help on how to setup Flutter and Dart or devices, one can visit the   following link:
+     - https://flutter.dev/docs/get-started/install
+3. Afterwards, one can run the application using the following command:
+     - flutter run
+4. The application should be running on the device or emulator. If not, one can run the following command to get the devices:
+     - flutter devices
+The application can then be run on the device using the following command:
+flutter run -d <device name>
 
 
 
+How To Install on Android Through APK
+1. After cloning the application, one must run the following command in the terminal to get all the dependencies:
+    - flutter pub get
+2. Run the following command to build an APK:
+    - flutter build apk
+3. The APK can be found in the following directory:
+    - <project directory>/build/app/outputs/flutter-apk/app-debug.apk

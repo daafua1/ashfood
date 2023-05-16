@@ -35,6 +35,7 @@ class _SelectLocationState extends State<SelectLocation> {
                 try {
                   await _handlePermission(true, false);
                 } catch (e) {
+                  print(e.toString());
                   context.loaderOverlay.hide();
                   Fluttertoast.showToast(
                       msg:
@@ -68,6 +69,7 @@ class _SelectLocationState extends State<SelectLocation> {
                       long: authController.lat.value));
                 } catch (e) {
                   context.loaderOverlay.hide();
+                  print(e.toString());
                   Fluttertoast.showToast(
                       msg:
                           'Network error occured. Please check your connectivity and try again');
@@ -153,6 +155,7 @@ class _SelectLocationState extends State<SelectLocation> {
           context.loaderOverlay.hide();
           Get.back();
         } catch (e) {
+          print(e.toString());
           Fluttertoast.showToast(
               msg:
                   "Could not find coordinates for this address. Please use other options",

@@ -1,8 +1,8 @@
 
-GitHub Link: https://github.com/daafua1/ashfood
+**GitHub Link:** https://github.com/daafua1/ashfood
 
 
-How To Install the Application
+**How To Install the Application**
 
 The application can be installed on both Android and iOS devices as well as emulators.
 One must ensure Flutter and Dart are well setup and the person is capable of running flutter applications.
@@ -20,7 +20,8 @@ flutter run -d <device name>
 
 
 
-How To Install on Android Through APK
+**How To Install on Android Through APK**
+    
 1. After cloning the application, one must run the following command in the terminal to get all the dependencies:
     - flutter pub get
 2. Run the following command to build an APK:
